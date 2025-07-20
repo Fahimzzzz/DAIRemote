@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.dairemote_app.fragments.KeyboardToolbar;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,17 +29,14 @@ class KeyboardToolbarTest {
     @Mock
     private TextView mockTextView;
 
-    private TextView[] mockPage1Buttons;
-    private TextView[] mockPage2Buttons;
-
     @BeforeEach
     public void setUp() {
         // Initialize mocks
         MockitoAnnotations.initMocks(this);
 
         // Mock button arrays
-        mockPage1Buttons = new TextView[]{mock(TextView.class), mock(TextView.class)};
-        mockPage2Buttons = new TextView[]{mock(TextView.class), mock(TextView.class)};
+        TextView[] mockPage1Buttons = new TextView[]{mock(TextView.class), mock(TextView.class)};
+        TextView[] mockPage2Buttons = new TextView[]{mock(TextView.class), mock(TextView.class)};
 
         // Create instance of KeyboardToolbar
         keyboardToolbar = new KeyboardToolbar(

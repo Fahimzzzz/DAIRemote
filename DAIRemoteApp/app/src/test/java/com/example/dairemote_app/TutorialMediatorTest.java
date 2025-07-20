@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.dairemote_app.fragments.ServersFragment;
+import com.example.dairemote_app.utils.TutorialMediator;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,59 +50,59 @@ class TutorialMediatorTest {
 
     @Test
     void getTutorialOn() {
-        tutorialMediator.setTutorialOn(true);
-        assertTrue( tutorialMediator.getTutorialOn(), "Tutorial is on");
+        tutorialMediator.tutorialOn = true;
+        assertTrue(tutorialMediator.tutorialOn, "Tutorial is on");
 
-        tutorialMediator.setTutorialOn(false);
-        assertFalse(tutorialMediator.getTutorialOn());
+        tutorialMediator.tutorialOn = false;
+        assertFalse(tutorialMediator.tutorialOn);
 
     }
 
     @Test
     void getCurrentStep() {
-        tutorialMediator.setCurrentStep(0);
-        assertEquals(0, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 0;
+        assertEquals(0, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(1);
-        assertEquals(1, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 1;
+        assertEquals(1, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(2);
-        assertEquals(2, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 2;
+        assertEquals(2, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(3);
-        assertEquals(3, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 3;
+        assertEquals(3, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(4);
-        assertEquals(4, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 4;
+        assertEquals(4, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(5);
-        assertEquals(5, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 5;
+        assertEquals(5, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(6);
-        assertEquals(6, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 6;
+        assertEquals(6, tutorialMediator.currentStep);
 
-        tutorialMediator.setCurrentStep(7);
-        assertEquals(7, tutorialMediator.getCurrentStep());
+        tutorialMediator.currentStep = 7;
+        assertEquals(7, tutorialMediator.currentStep);
 
     }
 
     @Test
     void setServersPage() {
-        ServersPage mockServersPage = Mockito.mock(ServersPage.class);
-        tutorialMediator.setServersPage(mockServersPage);
-        assertNotNull(mockServersPage);
+        ServersFragment mockServersFragment = Mockito.mock(ServersFragment.class);
+        tutorialMediator.setServersPage(mockServersFragment);
+        assertNotNull(mockServersFragment);
 
     }
 
     @Test
     void checkIfStepCompleted() {
-        tutorialMediator.setCurrentStep(0);
+        tutorialMediator.currentStep = 0;
         assertTrue(tutorialMediator.checkIfStepCompleted());
 
-        tutorialMediator.setCurrentStep(3);
+        tutorialMediator.currentStep = 3;
         assertFalse(tutorialMediator.checkIfStepCompleted());
 
-        tutorialMediator.setCurrentStep(5);
+        tutorialMediator.currentStep = 5;
         assertTrue(tutorialMediator.checkIfStepCompleted());
 
     }
