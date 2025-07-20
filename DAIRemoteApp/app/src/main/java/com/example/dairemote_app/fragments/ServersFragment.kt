@@ -8,12 +8,9 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.dairemote_app.HostSearchCallback
 import com.example.dairemote_app.R
@@ -120,7 +117,7 @@ class ServersFragment : Fragment() {
 
     private fun priorConnectionEstablishedCheck(host: String): Boolean {
         if (viewModel.connectionManager?.getConnectionEstablished() == true) {
-            if (host != ConnectionManager.getServerAddress()) {
+            if (host != viewModel.connectionManager!!.getServerAddress()) {
                 // Stop the current connection before attempting a new one
                 viewModel.connectionManager!!.shutdown()
             } else {

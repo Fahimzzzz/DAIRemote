@@ -15,6 +15,10 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
+private const val MAX_RETRIES = 3
+private const val INITIAL_RETRY_DELAY_MS = 500L
+private const val SOCKET_TIMEOUT_MS = 5000L
+
 class ConnectionManager(serverAddress: String) {
     private val executorService: ExecutorService
     private var hostName: String? = null
@@ -87,42 +91,63 @@ class ConnectionManager(serverAddress: String) {
         }
     }
 
-    // Initialize connection
-    fun initializeConnection(): Boolean {
-        setServerResponse("")
-        var broadcastCount = 0
-        while (getServerResponse().isNullOrEmpty()) {
-            try {
-                sendData("Connection requested by ${getDeviceName()}", getInetAddress())
-                waitForResponse(5000) // Increased timeout
+    private inline fun runWithRetry(maxRetries: Int, block: (attempt: Int) -> Boolean): Boolean {
+        var lastException: Exception? = null
 
-                when (getServerResponse()?.lowercase()) {
+        for (attempt in 0 until maxRetries) {
+            try {
+                return block(attempt)
+            } catch (e: Exception) {
+                lastException = e
+                if (attempt < maxRetries - 1) {
+                    Thread.sleep(INITIAL_RETRY_DELAY_MS * (attempt + 1))
+                }
+            }
+        }
+
+        throw lastException ?: IllegalStateException("No exception recorded")
+    }
+
+    fun initializeConnection(): Boolean {
+        return runWithRetry(MAX_RETRIES) { attempt ->
+            try {
+                val socketTimeout = SOCKET_TIMEOUT_MS * (attempt + 1)
+                getUDPSocket().soTimeout = socketTimeout.toInt()
+
+                sendData("Connection requested by ${getDeviceName()}", getInetAddress())
+                waitForResponse(socketTimeout.toInt())
+
+                return@runWithRetry when (getServerResponse()?.lowercase()) {
                     "wait" -> {
-                        // Handle waiting case
                         waitForApproval()
-                        return getServerResponse().equals("approved", ignoreCase = true)
+                        val approved = getServerResponse().equals("approved", ignoreCase = true)
+                        if (approved) {
+                            shutdownHostSearchInBackground()
+                            ConnectionMonitor.getInstance(this)
+                            setConnectionEstablished(true)
+                        }
+                        return approved
                     }
                     "approved" -> {
                         shutdownHostSearchInBackground()
                         ConnectionMonitor.getInstance(this)
                         setConnectionEstablished(true)
-                        return true
+                        true
                     }
                     "declined" -> {
                         resetConnectionManager()
-                        return false
+                        false
                     }
+                    else -> throw IOException("Invalid server response")
                 }
-
             } catch (e: Exception) {
-                Log.e("Connection", "Error during initialization", e)
-            }
-
-            if (++broadcastCount > 5) {
-                return false
+                Log.w("Connection", "Attempt $attempt failed", e)
+                if (attempt == MAX_RETRIES - 1) {
+                    resetConnectionManager()
+                }
+                throw e
             }
         }
-        return false
     }
 
     private fun waitForApproval() {

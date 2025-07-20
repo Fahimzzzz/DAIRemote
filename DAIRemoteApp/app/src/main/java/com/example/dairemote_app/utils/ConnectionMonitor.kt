@@ -6,12 +6,16 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+private const val HEARTBEAT_INTERVAL_MS = 2000L
+private const val HEARTBEAT_TIMEOUT_MS: Int = 3000
+private const val MAX_MISSED_HEARTBEATS = 3
+
 class ConnectionMonitor(manager: ConnectionManager) {
     private lateinit var connectionManager: ConnectionManager
     private lateinit var handler: Handler
-    private lateinit var heartbeatService: Runnable
     private var serviceRunning = false
     private lateinit var heartbeatSocket: SocketManager
+    private var missedHeartbeats = 0
 
     init {
         setConnectionManager(manager)
@@ -34,20 +38,36 @@ class ConnectionMonitor(manager: ConnectionManager) {
         return this.heartbeatSocket
     }
 
-    private fun initHeartbeat() {
-        handler = Handler(Looper.getMainLooper())
-        heartbeatService = object : Runnable {
-            override fun run() {
-                // Send heartbeat
+    private val heartbeatService = object : Runnable {
+        override fun run() {
+            if (!serviceRunning) return
+
+            try {
                 if (sendHeartbeat()) {
-                    handler.postDelayed(this, 2000) // Repeat every 2 seconds
+                    missedHeartbeats = 0
+                    handler.postDelayed(this, HEARTBEAT_INTERVAL_MS)
                 } else {
-                    setServiceRunning(false)
-                    getConnectionManager().setConnectionEstablished(false)
+                    missedHeartbeats++
+                    if (missedHeartbeats >= MAX_MISSED_HEARTBEATS) {
+                        handleConnectionLoss()
+                    } else {
+                        handler.postDelayed(this, HEARTBEAT_INTERVAL_MS / 2)
+                    }
                 }
+            } catch (e: Exception) {
+                handleConnectionLoss()
             }
         }
+    }
 
+    private fun handleConnectionLoss() {
+        setServiceRunning(false)
+        connectionManager.setConnectionEstablished(false)
+        // Notify view model or UI about connection loss
+    }
+
+    private fun initHeartbeat() {
+        handler = Handler(Looper.getMainLooper())
         heartbeatExecutorService = Executors.newCachedThreadPool()
     }
 
@@ -55,7 +75,7 @@ class ConnectionMonitor(manager: ConnectionManager) {
         return getServiceRunning()
     }
 
-    fun setServiceRunning(serviceRunning: Boolean) {
+    private fun setServiceRunning(serviceRunning: Boolean) {
         this.serviceRunning = serviceRunning
     }
 
@@ -102,7 +122,7 @@ class ConnectionMonitor(manager: ConnectionManager) {
                 {
                     try {
                         getHeartbeatSocket().sendData("DroidHeartBeat")
-                        setHeartbeatResponse(getHeartbeatSocket().waitForResponse(3000))
+                        setHeartbeatResponse(getHeartbeatSocket().waitForResponse(HEARTBEAT_TIMEOUT_MS))
 
                         if (getHeartbeatResponse().equals("HeartBeat Ack", ignoreCase = true)) {
                             return@supplyAsync true
