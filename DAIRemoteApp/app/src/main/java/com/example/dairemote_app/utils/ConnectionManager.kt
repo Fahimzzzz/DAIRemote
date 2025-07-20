@@ -276,10 +276,6 @@ class ConnectionManager(serverAddress: String) {
         }
     }
 
-    fun getServerAddress(): String {
-        return serverAddress
-    }
-
     companion object {
         private var hostSearchExecService: ExecutorService? = null
         private val connectionEstablished = AtomicBoolean(false)
@@ -330,7 +326,7 @@ class ConnectionManager(serverAddress: String) {
         }
 
         fun getServerAddress(): String {
-            return serverAddress
+            return if (::serverAddress.isInitialized) serverAddress else ""
         }
 
         fun getInetAddress(): InetAddress {

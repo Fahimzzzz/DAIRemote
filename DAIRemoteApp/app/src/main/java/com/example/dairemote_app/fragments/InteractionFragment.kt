@@ -499,19 +499,6 @@ class InteractionFragment : Fragment() {
                 // Optional: Add any post-sliding actions
             }
         })
-
-        volumeSlider.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                messageHost("AudioVolume " + seekBar.progress)
-                currentVolume.text = progress.toString()
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-            }
-        })
     }
 
     private fun setupKeyboard() {

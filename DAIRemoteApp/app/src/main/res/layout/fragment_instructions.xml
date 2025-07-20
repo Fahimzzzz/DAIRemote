@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="114dp"
         android:fontFamily="@font/audiowide"
-        android:text="Instructions"
+        android:text="@string/instructions"
         android:textColor="@color/white"
         android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"

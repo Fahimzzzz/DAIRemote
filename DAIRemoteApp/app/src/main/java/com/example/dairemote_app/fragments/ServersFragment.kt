@@ -116,14 +116,17 @@ class ServersFragment : Fragment() {
     }
 
     private fun priorConnectionEstablishedCheck(host: String): Boolean {
-        if (viewModel.connectionManager?.getConnectionEstablished() == true) {
-            if (host != viewModel.connectionManager!!.getServerAddress()) {
-                // Stop the current connection before attempting a new one
-                viewModel.connectionManager!!.shutdown()
-            } else {
-                initiateInteractionPage("Already connected")
+        viewModel.connectionManager?.let { manager ->
+            if (manager.getConnectionEstablished()) {
+                // Safe to call getServerAddress() only if connection is established
+                if (host != ConnectionManager.getServerAddress()) {
+                    // Stop the current connection before attempting a new one
+                    manager.shutdown()
+                } else {
+                    initiateInteractionPage("Already connected")
+                }
+                return true
             }
-            return true
         }
         return false
     }
@@ -133,10 +136,17 @@ class ServersFragment : Fragment() {
 
         if (!priorConnectionEstablishedCheck(server)) {
             viewModel.connectionManager = ConnectionManager(server)
+            val manager = viewModel.connectionManager ?: run {
+                requireActivity().runOnUiThread {
+                    connectionProgress.visibility = View.GONE
+                    notifyUser("Connection manager initialization failed")
+                }
+                return
+            }
 
             if (!executor.isShutdown) {
                 executor.execute {
-                    if (viewModel.connectionManager!!.initializeConnection()) {
+                    if (manager.initializeConnection()) {
                         requireActivity().runOnUiThread {
                             connectionProgress.visibility = View.GONE
                             initiateInteractionPage("Connected to: $server")
@@ -146,7 +156,7 @@ class ServersFragment : Fragment() {
                             connectionProgress.visibility = View.GONE
                             notifyUser("Connection failed")
                         }
-                        viewModel.connectionManager!!.resetConnectionManager()
+                        manager.resetConnectionManager()
                     }
                     executor.shutdownNow()
                 }

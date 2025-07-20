@@ -14,7 +14,7 @@
         android:elevation="8dp"
         android:fontFamily="@font/audiowide"
         android:padding="8dp"
-        android:text="Tap here to start the tutorial!"
+        android:text="@string/tap_here_to_start_the_tutorial"
         android:textColor="#FFE832"
         android:textSize="16sp"
         android:visibility="gone"
@@ -71,177 +71,177 @@
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="0"
-                    android:text="WIN" />
+                    android:text="@string/win" />
 
                 <TextView
                     android:id="@+id/fnKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="1"
-                    android:text="FN" />
+                    android:text="@string/fn" />
 
                 <TextView
                     android:id="@+id/ctrlKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="2"
-                    android:text="CTRL" />
+                    android:text="@string/ctrl" />
 
                 <TextView
                     android:id="@+id/shiftKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="3"
-                    android:text="SHIFT" />
+                    android:text="@string/shift" />
 
                 <TextView
                     android:id="@+id/altKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="4"
-                    android:text="ALT" />
+                    android:text="@string/alt" />
 
                 <TextView
                     android:id="@+id/moreOpt"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="0"
                     android:layout_column="5"
-                    android:text="..." />
+                    android:text="@string/next_page" />
 
                 <TextView
                     android:id="@+id/f1Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="0"
-                    android:text="F1" />
+                    android:text="@string/f1" />
 
                 <TextView
                     android:id="@+id/f2Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="1"
-                    android:text="F2" />
+                    android:text="@string/f2" />
 
                 <TextView
                     android:id="@+id/f3Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="2"
-                    android:text="F3" />
+                    android:text="@string/f3" />
 
                 <TextView
                     android:id="@+id/f4Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="3"
-                    android:text="F4" />
+                    android:text="@string/f4" />
 
                 <TextView
                     android:id="@+id/f5Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="4"
-                    android:text="F5" />
+                    android:text="@string/f5" />
 
                 <TextView
                     android:id="@+id/f6Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="5"
-                    android:text="F6" />
+                    android:text="@string/f6" />
 
                 <TextView
                     android:id="@+id/f7Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="0"
-                    android:text="F7" />
+                    android:text="@string/f7" />
 
                 <TextView
                     android:id="@+id/f8Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="1"
-                    android:text="F8" />
+                    android:text="@string/f8" />
 
                 <TextView
                     android:id="@+id/f9Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="2"
-                    android:text="F9" />
+                    android:text="@string/f9" />
 
                 <TextView
                     android:id="@+id/f10Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="3"
-                    android:text="F10" />
+                    android:text="@string/f10" />
 
                 <TextView
                     android:id="@+id/f11Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="4"
-                    android:text="F11" />
+                    android:text="@string/f11" />
 
                 <TextView
                     android:id="@+id/f12Key"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="5"
-                    android:text="F12" />
+                    android:text="@string/f12" />
 
                 <TextView
                     android:id="@+id/insertKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="0"
-                    android:text="INS" />
+                    android:text="@string/ins" />
 
                 <TextView
                     android:id="@+id/deleteKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="1"
-                    android:text="DEL" />
+                    android:text="@string/del" />
 
                 <TextView
                     android:id="@+id/printScreenKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="2"
-                    android:text="PRSC" />
+                    android:text="@string/prsc" />
 
                 <TextView
                     android:id="@+id/tabKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="3"
-                    android:text="TAB" />
+                    android:text="@string/tab" />
 
                 <TextView
                     android:id="@+id/upKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="4"
-                    android:drawableLeft="@drawable/keyboard_toolbar_arrowup"
-                    android:paddingLeft="20dp" />
+                    android:paddingLeft="20dp"
+                    app:drawableLeftCompat="@drawable/keyboard_toolbar_arrowup" />
 
                 <TextView
                     android:id="@+id/escKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="1"
                     android:layout_column="5"
-                    android:text="ESC" />
+                    android:text="@string/esc" />
 
                 <TextView
                     android:id="@+id/soundUpKey"
                     style="@style/KeyboardExtrasStyle"
                     android:layout_row="2"
                     android:layout_column="0"
-                    android:drawableLeft="@drawable/keyboard_toolbar_soundup"
-                    android:paddingLeft="20dp" />
+                    android:paddingLeft="20dp"
+                    app:drawableLeftCompat="@drawable/keyboard_toolbar_soundup" />
 
                 <TextView
                     android:id="@+id/soundDownKey"
@@ -293,6 +293,7 @@
         android:layout_height="115dp"
         android:background="@color/material_dynamic_neutral20"
         android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
@@ -472,7 +473,7 @@
             android:layout_row="0"
             android:layout_column="0"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Disconnect from host"
+            android:contentDescription="@string/disconnect_from_host"
             android:src="@drawable/udpmsg_icon" />
 
         <ImageButton
@@ -481,7 +482,7 @@
             android:layout_row="0"
             android:layout_column="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Cycle audio"
+            android:contentDescription="@string/cycle_audio"
             android:src="@drawable/audio_cycle_icon" />
 
         <ImageButton
@@ -490,7 +491,7 @@
             android:layout_row="0"
             android:layout_column="2"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Display profiles"
+            android:contentDescription="@string/display_profiles"
             android:src="@drawable/display_profile_icon" />
 
         <ImageButton
@@ -499,7 +500,7 @@
             android:layout_row="0"
             android:layout_column="3"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Keyboard icon to pull system keyboard"
+            android:contentDescription="@string/keyboard_icon_to_pull_system_keyboard"
             android:src="@drawable/keyboard_light_icon" />
     </GridLayout>
 

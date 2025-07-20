@@ -10,7 +10,7 @@ internal class ConnectionManagerTest {
     @Test
     fun test_getHostAddress_Initialization() {
         Assertions.assertEquals(
-            connectionManager!!.getServerAddress(),
+            ConnectionManager.getServerAddress(),
             "Testing GetServerAddress() after initialization with '192.168.1.1'",
             "192.168.1.1"
         )
