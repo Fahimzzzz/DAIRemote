@@ -12,6 +12,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.GestureDetector
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -110,6 +111,7 @@ class InteractionFragment : Fragment() {
     }
 
     fun messageHost(message: String) {
+        Log.i("Keyboard", message)
         if (!viewModel.connectionManager?.sendHostMessage(message)!!) {
             startHome("Connection lost")
         }
@@ -134,11 +136,6 @@ class InteractionFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (!viewModel.connectionManager?.getConnectionEstablished()!!) {
-            startHome("Connection lost")
-            return
-        }
-
         super.onViewCreated(view, savedInstanceState)
 
         interactionsHelpText = binding.interationsHelpTextView
@@ -506,12 +503,12 @@ class InteractionFragment : Fragment() {
         editText = binding.editText
         // Initialize row 2 and 3 button arrays for keyboardToolbar
         toolbar = KeyboardToolbar(
-            R.id.moreOpt,
-            R.id.winKey,
-            R.id.fnKey,
-            R.id.altKey,
-            R.id.ctrlKey,
-            R.id.shiftKey,
+            binding.moreOpt,
+            binding.winKey,
+            binding.fnKey,
+            binding.altKey,
+            binding.ctrlKey,
+            binding.shiftKey,
             binding.keyboardInputView,
             binding.keyboardToolbar,
             binding.keyboardExtraButtonsGrid,
@@ -544,10 +541,10 @@ class InteractionFragment : Fragment() {
                 binding.f12Key
             )
         )
-        val moreOpts = binding.moreOpt
-        moreOpts.setOnClickListener { //v: View? ->
+
+        binding.moreOpt.setOnClickListener { //v: View? ->
             toolbar.keyboardExtraSetRowVisibility(
-                toolbar.NextToolbarPage()
+                toolbar.nextToolbarPage()
             )
         }
 
@@ -597,13 +594,13 @@ class InteractionFragment : Fragment() {
             val keyboardVisible = keypadHeight > screenHeight * 0.15
 
             if (keyboardVisible) {
-                toolbar.ToggleKeyboardToolbar(true)
-                toolbar.GetKeyboardTextView().visibility = View.VISIBLE
+                toolbar.toggleKeyboardToolbar(true)
+                toolbar.getKeyboardTextView().visibility = View.VISIBLE
             } else {
-                toolbar.ToggleKeyboardToolbar(false)
+                toolbar.toggleKeyboardToolbar(false)
                 clearEditText()
-                toolbar.GetKeyboardTextView().text = ""
-                toolbar.GetKeyboardTextView().visibility = View.GONE
+                toolbar.getKeyboardTextView().text = ""
+                toolbar.getKeyboardTextView().visibility = View.GONE
             }
         }
 
@@ -615,17 +612,17 @@ class InteractionFragment : Fragment() {
                 val cursorPosition = editText.selectionStart
                 if (cursorPosition > 0) {
                     editText.text.delete(cursorPosition - 1, cursorPosition)
-                    val textViewText = toolbar.GetKeyboardTextView().text.toString()
+                    val textViewText = toolbar.getKeyboardTextView().text.toString()
                     if (textViewText.isNotEmpty()) {
-                        toolbar.GetKeyboardTextView().text =
+                        toolbar.getKeyboardTextView().text =
                             textViewText.substring(0, textViewText.length - 1)
                     }
                 }
-                if (!toolbar.GetModifierToggled()) {
+                if (!toolbar.getModifierToggled()) {
                     messageHost("KEYBOARD_WRITE {BS}")
                 }
                 return@OnKeyListener true
-            } else if (!toolbar.GetModifierToggled() && keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+            } else if (!toolbar.getModifierToggled() && keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
                 messageHost("KEYBOARD_WRITE {ENTER}")
                 return@OnKeyListener true
             }
@@ -640,12 +637,12 @@ class InteractionFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (count > before) {
                     val addedChar = s[start + count - 1]
-                    if (!toolbar.GetModifierToggled()) {
+                    if (!toolbar.getModifierToggled()) {
                         messageHost("KEYBOARD_WRITE $addedChar")
                     } else {
-                        toolbar.AppendKeyCombination(addedChar)
+                        toolbar.appendKeyCombination(addedChar)
                     }
-                    toolbar.GetKeyboardTextView().append(addedChar.toString())
+                    toolbar.getKeyboardTextView().append(addedChar.toString())
                 }
             }
 
@@ -750,13 +747,6 @@ class InteractionFragment : Fragment() {
         editText.clearFocus()
     }
 
-    private fun resetKeyboardModifiers() {
-        toolbar.ResetKeyboardModifiers()
-
-        toolbar.SetModifierToggled(false)
-        editText.setText("")
-    }
-
     // This is used in styles but does not count as a usage for some reason
     // DO NOT DELETE
     fun extraToolbarOnClick(view: View) {
@@ -764,41 +754,67 @@ class InteractionFragment : Fragment() {
         var msg = ""
         var audio = false
 
+        // Get all modifier button views
+        val modifierButtons = listOf(
+            binding.winKey,
+            binding.fnKey,
+            binding.altKey,
+            binding.ctrlKey,
+            binding.shiftKey
+        )
+
         // Handle modifier buttons differently
-        val isModifierButton = viewID == R.id.winKey || viewID == R.id.fnKey ||
-                viewID == R.id.altKey || viewID == R.id.ctrlKey ||
-                viewID == R.id.shiftKey
+        val isModifierButton = modifierButtons.any { it.id == viewID }
 
         if (isModifierButton) {
-            // Toggle the modifier state
-            val wasToggled = toolbar.KeyboardToolbarModifier(viewID)
-            toolbar.SetModifierToggled(wasToggled)
+            Log.i("Keyboard", "Modifier button pressed")
 
-            // Visual feedback for modifier buttons
-            view.setBackgroundColor(if (wasToggled) Color.GRAY else Color.LTGRAY)
+            // Check if this modifier was already active
+            val wasAlreadyActive = when (viewID) {
+                R.id.winKey -> toolbar.winActive
+                R.id.fnKey -> toolbar.fnActive
+                R.id.altKey -> toolbar.altActive
+                R.id.ctrlKey -> toolbar.ctrlActive
+                R.id.shiftKey -> toolbar.shiftActive
+                else -> false
+            }
+
+            // If this modifier was already active, deactivate all
+            if (wasAlreadyActive) {
+                if(toolbar.getKeyCombination().isNotEmpty()) {
+                    toolbar.addParentheses()
+                    messageHost("KEYBOARD_WRITE ${toolbar.getKeyCombination()}")
+                }
+
+                resetKeyboardModifiers()
+                return
+            }
+
+            // Toggle the modifier state
+            toolbar.setModifierToggled(toolbar.keyboardToolbarModifier(viewID))
+
+            // Update visual state for all modifiers
+            updateModifierButtonColors()
             return
         }
 
         // Handle regular buttons
-        toolbar.SetModifierToggled(false)
+        resetKeyboardModifiers()
 
         // Find which button was pressed
         for (i in 0..11) {
             val buttons =
-                if (toolbar.GetCurrentToolbarPage() == 0) toolbar.GetButtons(0) else toolbar.GetButtons(
-                    1
-                )
+                if (toolbar.getCurrentToolbarPage() == 0) toolbar.getButtons(0) else toolbar.getButtons(1)
             if (viewID == buttons[i].id) {
-                if (toolbar.GetCurrentToolbarPage() == 0 && (i == 6 || i == 7 || i == 8)) {
+                if (toolbar.getCurrentToolbarPage() == 0 && (i == 6 || i == 7 || i == 8)) {
                     audio = true
                 }
-                msg =
-                    if (toolbar.GetCurrentToolbarPage() == 0) toolbar.GetKeys(0)[i] else toolbar.GetKeys(
-                        1
-                    )[i]
+                msg = if (toolbar.getCurrentToolbarPage() == 0) toolbar.getKeys(0)[i] else toolbar.getKeys(1)[i]
                 break
             }
         }
+
+        Log.i("Keyboard", msg)
 
         // Visual feedback
         view.setBackgroundColor(Color.LTGRAY)
@@ -808,15 +824,23 @@ class InteractionFragment : Fragment() {
 
         // Handle the action
         when {
-            toolbar.GetKeyCombination().isNotEmpty() -> {
-                toolbar.AddParentheses()
-                messageHost("KEYBOARD_WRITE ${toolbar.GetKeyCombination()}")
-                resetKeyboardModifiers()
-            }
-
             audio -> messageHost("AUDIO $msg")
             msg.isNotEmpty() -> messageHost("KEYBOARD_WRITE $msg")
         }
+    }
+
+    private fun updateModifierButtonColors() {
+        binding.winKey.setBackgroundColor(if (toolbar.winActive) Color.LTGRAY else Color.TRANSPARENT)
+        binding.fnKey.setBackgroundColor(if (toolbar.fnActive) Color.LTGRAY else Color.TRANSPARENT)
+        binding.altKey.setBackgroundColor(if (toolbar.altActive) Color.LTGRAY else Color.TRANSPARENT)
+        binding.ctrlKey.setBackgroundColor(if (toolbar.ctrlActive) Color.LTGRAY else Color.TRANSPARENT)
+        binding.shiftKey.setBackgroundColor(if (toolbar.shiftActive) Color.LTGRAY else Color.TRANSPARENT)
+    }
+
+    private fun resetKeyboardModifiers() {
+        toolbar.resetKeyboardModifiers()
+        updateModifierButtonColors()
+        editText.setText("")
     }
 
     override fun onPause() {

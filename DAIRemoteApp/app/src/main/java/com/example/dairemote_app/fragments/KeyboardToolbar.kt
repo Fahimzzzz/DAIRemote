@@ -7,12 +7,12 @@ import androidx.appcompat.widget.Toolbar
 import com.example.dairemote_app.R
 
 class KeyboardToolbar internal constructor(
-    var moreOpts: Int,
-    var modifier1: Int,
-    var modifier2: Int,
-    var modifier3: Int,
-    var modifier4: Int,
-    var modifier5: Int,
+    var moreOpts: View,
+    var modifier1: View,
+    var modifier2: View,
+    var modifier3: View,
+    var modifier4: View,
+    var modifier5: View,
     private val keyboardTextInputView: TextView,
     private val keyboardToolbar: Toolbar,
     private val keyboardExtraBtnsLayout: GridLayout,
@@ -20,11 +20,11 @@ class KeyboardToolbar internal constructor(
     private val p2RowsButtons: Array<TextView>
 ) {
     private val keyCombination = StringBuilder()
-    private var winActive = false
-    private var ctrlActive = false
-    private var shiftActive = false
-    private var altActive = false
-    private var fnActive = false
+    var winActive = false
+    var ctrlActive = false
+    var shiftActive = false
+    var altActive = false
+    var fnActive = false
     private var modifierToggled = false
     private val p1Keys = arrayOf(
         "{INS}",
@@ -57,106 +57,106 @@ class KeyboardToolbar internal constructor(
     private var parenthesesCount = 0
     private var currentPageIndex = 0
 
-    fun GetParenthesesCount(): Int {
+    fun getParenthesesCount(): Int {
         return this.parenthesesCount
     }
 
-    fun GetKeyboardToolbar(): Toolbar {
+    fun getKeyboardToolbar(): Toolbar {
         return this.keyboardToolbar
     }
 
-    fun GeyKeyboardLayout(): GridLayout {
+    fun getKeyboardLayout(): GridLayout {
         return this.keyboardExtraBtnsLayout
     }
 
-    fun GetModifierToggled(): Boolean {
+    fun getModifierToggled(): Boolean {
         return this.modifierToggled
     }
 
-    fun SetModifierToggled(toggled: Boolean) {
+    fun setModifierToggled(toggled: Boolean) {
         this.modifierToggled = toggled
     }
 
-    fun GetKeys(page: Int): Array<String> {
+    fun getKeys(page: Int): Array<String> {
         if (page == 0) {
             return p1Keys
         }
         return p2Keys
     }
 
-    fun GetButtons(page: Int): Array<TextView> {
+    fun getButtons(page: Int): Array<TextView> {
         if (page == 0) {
             return p1RowsButtons
         }
         return p2RowsButtons
     }
 
-    fun GetCurrentToolbarPage(): Int {
+    fun getCurrentToolbarPage(): Int {
         return this.currentPageIndex
     }
 
-    fun SetCurrentToolbarPage(page: Int) {
+    private fun setCurrentToolbarPage(page: Int) {
         this.currentPageIndex = page
     }
 
-    fun NextToolbarPage(): Int {
-        SetCurrentToolbarPage((GetCurrentToolbarPage() + 1) % 2)
-        return GetCurrentToolbarPage()
+    fun nextToolbarPage(): Int {
+        setCurrentToolbarPage((getCurrentToolbarPage() + 1) % 2)
+        return getCurrentToolbarPage()
     }
 
-    fun GetKeyboardTextView(): TextView {
+    fun getKeyboardTextView(): TextView {
         return this.keyboardTextInputView
     }
 
-    fun GetKeyCombination(): StringBuilder {
+    fun getKeyCombination(): StringBuilder {
         return this.keyCombination
     }
 
-    fun AppendKeyCombination(character: String?) {
+    fun appendKeyCombination(character: String?) {
         keyCombination.append(character)
     }
 
-    fun AppendKeyCombination(character: Char) {
+    fun appendKeyCombination(character: Char) {
         keyCombination.append(character)
     }
 
-    fun AddParentheses() {
-        if (GetParenthesesCount() > 0) {
+    fun addParentheses() {
+        if (getParenthesesCount() > 0) {
             for (i in 0 until parenthesesCount) {
-                AppendKeyCombination(")")
+                appendKeyCombination(")")
             }
             keyboardTextInputView.text = ""
         }
     }
 
-    fun ToggleKeyboardToolbar(open: Boolean) {
+    fun toggleKeyboardToolbar(open: Boolean) {
         if (open) {
-            if (GetKeyboardToolbar().visibility != View.VISIBLE) {
-                GetKeyboardToolbar().visibility = View.VISIBLE
-                GeyKeyboardLayout().visibility = View.VISIBLE
-                keyboardExtraSetRowVisibility(GetCurrentToolbarPage())
+            if (getKeyboardToolbar().visibility != View.VISIBLE) {
+                getKeyboardToolbar().visibility = View.VISIBLE
+                getKeyboardLayout().visibility = View.VISIBLE
+                keyboardExtraSetRowVisibility(getCurrentToolbarPage())
             }
         } else {
-            if (GetKeyboardToolbar().visibility == View.VISIBLE) {
-                GetKeyboardToolbar().visibility = View.GONE
-                GeyKeyboardLayout().visibility = View.GONE
+            if (getKeyboardToolbar().visibility == View.VISIBLE) {
+                getKeyboardToolbar().visibility = View.GONE
+                getKeyboardLayout().visibility = View.GONE
             }
         }
     }
 
     fun keyboardExtraSetRowVisibility(pageIndex: Int) {
         // Hide buttons for the current page
-        for (button in if ((pageIndex == 0)) GetButtons(1) else GetButtons(0)) {
+        for (button in if ((pageIndex == 0)) getButtons(1) else getButtons(0)) {
             button.visibility = View.GONE
         }
 
         // Show buttons for the current page
-        for (button in if ((pageIndex == 0)) GetButtons(0) else GetButtons(1)) {
+        for (button in if ((pageIndex == 0)) getButtons(0) else getButtons(1)) {
             button.visibility = View.VISIBLE
         }
     }
 
-    fun KeyboardToolbarModifier(viewID: Int): Boolean {
+    fun keyboardToolbarModifier(viewID: Int): Boolean {
         return when (viewID) {
             R.id.moreOpt -> {
                 return true
@@ -164,7 +164,7 @@ class KeyboardToolbar internal constructor(
 
             R.id.winKey -> {
                 winActive = !winActive
-                KeyboardToolbarModifierHandler(
+                keyboardToolbarModifierHandler(
                     winActive,
                     "WIN(",
                     "Win("
@@ -173,7 +173,7 @@ class KeyboardToolbar internal constructor(
 
             R.id.fnKey -> {
                 fnActive = !fnActive
-                KeyboardToolbarModifierHandler(
+                keyboardToolbarModifierHandler(
                     fnActive,
                     "FN+",
                     null
@@ -182,7 +182,7 @@ class KeyboardToolbar internal constructor(
 
             R.id.altKey -> {
                 altActive = !altActive
-                KeyboardToolbarModifierHandler(
+                keyboardToolbarModifierHandler(
                     altActive,
                     "%(",
                     "Alt("
@@ -191,7 +191,7 @@ class KeyboardToolbar internal constructor(
 
             R.id.ctrlKey -> {
                 ctrlActive = !ctrlActive
-                KeyboardToolbarModifierHandler(
+                keyboardToolbarModifierHandler(
                     ctrlActive,
                     "^(",
                     "Ctrl("
@@ -200,7 +200,7 @@ class KeyboardToolbar internal constructor(
 
             R.id.shiftKey -> {
                 shiftActive = !shiftActive
-                KeyboardToolbarModifierHandler(
+                keyboardToolbarModifierHandler(
                     shiftActive,
                     "+(",
                     "Shift("
@@ -211,7 +211,7 @@ class KeyboardToolbar internal constructor(
         }
     }
 
-    private fun KeyboardToolbarModifierHandler(
+    private fun keyboardToolbarModifierHandler(
         condition: Boolean,
         keyComb: String,
         keyboardText: String?,
@@ -238,14 +238,21 @@ class KeyboardToolbar internal constructor(
         p2RowsButtons.forEach { button ->
             button.setOnClickListener(listener)
         }
+
+        modifier1.setOnClickListener(listener)
+        modifier2.setOnClickListener(listener)
+        modifier3.setOnClickListener(listener)
+        modifier4.setOnClickListener(listener)
+        modifier5.setOnClickListener(listener)
     }
 
-    fun ResetKeyboardModifiers() {
+    fun resetKeyboardModifiers() {
         winActive = false
         ctrlActive = false
         shiftActive = false
         altActive = false
         fnActive = false
+        setModifierToggled(false)
         parenthesesCount = 0
         keyCombination.setLength(0)
     }
