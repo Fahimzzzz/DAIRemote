@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -22,10 +24,10 @@
             android:name=".fragments.InstructionsFragment"
             android:exported="false" />
         <activity
-            android:name=".ServersFragment"
+            android:name=".fragments.ServersFragment"
             android:exported="false" />
         <activity
-            android:name=".InteractionPage"
+            android:name=".fragments.InteractionFragment"
             android:exported="false" />
         <activity
             android:name=".fragments.MainActivity"

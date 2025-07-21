@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.core.ktx)
+    implementation(libs.jmdns)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.ext.junit)
@@ -65,6 +66,8 @@ dependencies {
 
     // Optional: Material Components for better UI
     implementation (libs.material)
+
+    implementation (libs.jmdns)
 }
 
 // Test Logging
