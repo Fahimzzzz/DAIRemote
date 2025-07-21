@@ -63,10 +63,9 @@ public class DisplayConfig
 
     private static void setAudioDevice(string device)
     {
-        if (device != null)
+        if (profileAudioDevice != null)
         {
-            audioManager.RefreshAudioDeviceSubscriptions();
-            audioManager.SetDefaultAudioDevice(device);
+            audioManager.SetDefaultAudioDevice(profileAudioDevice);
         }
     }
 
