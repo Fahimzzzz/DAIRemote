@@ -22,7 +22,7 @@ class MdnsHostDiscovery(private val context: Context) {
                 lock.acquire()
 
                 jmDNS = JmDNS.create()
-                jmDNS?.addServiceListener("_dairesktop._tcp.local.", object : ServiceListener {
+                jmDNS?.addServiceListener("_daidesktop._tcp.local.", object : ServiceListener {
                     override fun serviceAdded(event: ServiceEvent) {
                         // Resolve the service to get details
                         jmDNS?.requestServiceInfo(event.type, event.name, true)

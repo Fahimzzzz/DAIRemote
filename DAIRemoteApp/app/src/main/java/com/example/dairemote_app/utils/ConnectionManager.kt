@@ -138,10 +138,9 @@ class ConnectionManager(serverAddress: String) {
                         resetConnectionManager()
                         false
                     }
-                    else -> throw IOException("Invalid server response")
+                    else -> throw IOException("Invalid server response ${getServerResponse()}")
                 }
             } catch (e: Exception) {
-                Log.w("Connection", "Attempt $attempt failed", e)
                 if (attempt == MAX_RETRIES - 1) {
                     resetConnectionManager()
                 }

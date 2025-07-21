@@ -17,15 +17,20 @@ public class UDPServerHost : IDisposable
     private DateTime lastHeartbeatTime;
     private TimeSpan heartbeatTimeout;
     private AudioManager.AudioDeviceManager audioManager;
+    //private WindowsServiceAdvertiser advertiser;
 
     public UDPServerHost()
     {
         udpServer = new UdpClient(serverPort);
         remoteEP = new IPEndPoint(IPAddress.Any, serverPort);
+
+        //advertiser = new WindowsServiceAdvertiser("DAIRemote Desktop", serverPort);
+        //advertiser.StartAdvertising();
     }
 
     public void Dispose()
     {
+        //advertiser?.Dispose();
         udpServer.Dispose();
     }
 

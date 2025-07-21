@@ -113,7 +113,6 @@ class InteractionFragment : Fragment() {
     }
 
     fun messageHost(message: String) {
-        Log.i("Keyboard", message)
         if (!viewModel.connectionManager?.sendHostMessage(message)!!) {
             startHome("Connection lost")
         }
@@ -775,8 +774,6 @@ class InteractionFragment : Fragment() {
         val isModifierButton = modifierButtons.any { it.id == viewID }
 
         if (isModifierButton) {
-            Log.i("Keyboard", "Modifier button pressed")
-
             // Check if this modifier was already active
             val wasAlreadyActive = when (viewID) {
                 R.id.winKey -> toolbar.winActive
@@ -821,8 +818,6 @@ class InteractionFragment : Fragment() {
                 break
             }
         }
-
-        Log.i("Keyboard", msg)
 
         // Visual feedback
         view.setBackgroundColor(Color.LTGRAY)

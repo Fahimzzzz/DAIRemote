@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +11,8 @@ namespace DisplayProfileManager;
 public class DisplayConfig
 {
     public const int ERROR_CONST = 0;
+    private static AudioManager.AudioDeviceManager audioManager = AudioManager.AudioDeviceManager.GetInstance();
+    private static string profileAudioDevice;
     public static event EventHandler<NotificationEventArgs> NotificationRequested;
 
     public static void RequestNotification(string notificationText)
@@ -56,6 +59,14 @@ public class DisplayConfig
 
         // Return null or a default path if the profile is not found
         return null;
+    }
+
+    private static void setAudioDevice(string device)
+    {
+        if (profileAudioDevice != null)
+        {
+            audioManager.SetDefaultAudioDevice(profileAudioDevice);
+        }
     }
 
     /*
@@ -900,6 +911,9 @@ public class DisplayConfig
         {
             string json = System.IO.File.ReadAllText(fileName);
             var displaySettings = JsonConvert.DeserializeObject<dynamic>(json);
+
+            profileAudioDevice = displaySettings.defaultAudioDevice;
+
             List<DISPLAYCONFIG_PATH_INFO> pathInfoList = [];
 
             foreach (var pathInfo in displaySettings.pathInfoArray)
@@ -1152,10 +1166,15 @@ public class DisplayConfig
                         RequestNotification("Failed to apply display profile");
                         return false;
                     }
+
+                    setAudioDevice(profileAudioDevice);
+
                     return true;
                 }
                 return false;
             }
+
+            setAudioDevice(profileAudioDevice);
 
             return true;
         }
@@ -1264,7 +1283,8 @@ public class DisplayConfig
                                }
                            }
                 }).ToList(),
-                additionalInfo = additionalInfo
+                additionalInfo = additionalInfo,
+                defaultAudioDevice = audioManager.GetDefaultAudioDevice().FullName
             };
 
             fileName = Path.Combine(GetDisplayProfilesDirectory(), fileName);
