@@ -20,6 +20,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -43,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dairemote_app.R
 import com.example.dairemote_app.databinding.FragmentInteractionBinding
 import com.example.dairemote_app.utils.AudioRecyclerAdapter
+import com.example.dairemote_app.utils.BackspaceEditText
 import com.example.dairemote_app.utils.ConnectionMonitor
 import com.example.dairemote_app.utils.DisplayProfilesRecyclerAdapter
 import com.example.dairemote_app.utils.TutorialMediator
@@ -56,7 +58,7 @@ class InteractionFragment : Fragment() {
     private var connectionMonitor: ConnectionMonitor? = null
 
     // Other variables from your Activity
-    private lateinit var editText: EditText
+    private lateinit var editText: BackspaceEditText
     private lateinit var interactionsHelpText: TextView
     private lateinit var startTutorial: TextView
     private val handler = Handler()
@@ -501,6 +503,68 @@ class InteractionFragment : Fragment() {
     private fun setupKeyboard() {
 
         editText = binding.editText
+
+        editText.apply {
+            isFocusable = true
+            isFocusableInTouchMode = true
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    val imm =
+                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+                }
+            }
+        }
+
+        editText.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                if (!toolbar.getModifierToggled()) {
+                    messageHost("KEYBOARD_WRITE {ENTER}")
+                }
+                true
+            } else {
+                false
+            }
+        }
+
+        editText.onBackspacePressed = {
+            val cursorPosition = editText.selectionStart
+            if (cursorPosition > 0) {
+                editText.text?.delete(cursorPosition - 1, cursorPosition)
+                val textViewText = toolbar.getKeyboardTextView().text.toString()
+                if (textViewText.isNotEmpty()) {
+                    toolbar.getKeyboardTextView().text =
+                        textViewText.substring(0, textViewText.length - 1)
+                }
+            }
+            if (!toolbar.getModifierToggled()) {
+                messageHost("KEYBOARD_WRITE {BS}")
+            }
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // Empty
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (count > before) {
+                    val addedChar = s[start + count - 1]
+                    if (!toolbar.getModifierToggled()) {
+                        messageHost("KEYBOARD_WRITE $addedChar")
+                    } else {
+                        toolbar.appendKeyCombination(addedChar)
+                    }
+                    toolbar.getKeyboardTextView().append(addedChar.toString())
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                // Empty
+            }
+        })
+
         // Initialize row 2 and 3 button arrays for keyboardToolbar
         toolbar = KeyboardToolbar(
             binding.moreOpt,
@@ -553,18 +617,6 @@ class InteractionFragment : Fragment() {
             extraToolbarOnClick(view)
         }
 
-        editText.apply {
-            isFocusable = true
-            isFocusableInTouchMode = true
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    val imm =
-                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-                }
-            }
-        }
-
         // 2. Keyboard button click handler
         binding.keyboardImgBtn.setOnClickListener {
             if (viewModel.connectionManager?.getConnectionEstablished() == true) {
@@ -606,50 +658,6 @@ class InteractionFragment : Fragment() {
 
         // Add the listener
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
-
-        editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                val cursorPosition = editText.selectionStart
-                if (cursorPosition > 0) {
-                    editText.text.delete(cursorPosition - 1, cursorPosition)
-                    val textViewText = toolbar.getKeyboardTextView().text.toString()
-                    if (textViewText.isNotEmpty()) {
-                        toolbar.getKeyboardTextView().text =
-                            textViewText.substring(0, textViewText.length - 1)
-                    }
-                }
-                if (!toolbar.getModifierToggled()) {
-                    messageHost("KEYBOARD_WRITE {BS}")
-                }
-                return@OnKeyListener true
-            } else if (!toolbar.getModifierToggled() && keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
-                messageHost("KEYBOARD_WRITE {ENTER}")
-                return@OnKeyListener true
-            }
-            false
-        })
-
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // Empty
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (count > before) {
-                    val addedChar = s[start + count - 1]
-                    if (!toolbar.getModifierToggled()) {
-                        messageHost("KEYBOARD_WRITE $addedChar")
-                    } else {
-                        toolbar.appendKeyCombination(addedChar)
-                    }
-                    toolbar.getKeyboardTextView().append(addedChar.toString())
-                }
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                // Empty
-            }
-        })
     }
 
     private fun setupManualDisconnect() {

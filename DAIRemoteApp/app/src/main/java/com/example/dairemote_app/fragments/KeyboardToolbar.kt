@@ -175,8 +175,8 @@ class KeyboardToolbar internal constructor(
                 fnActive = !fnActive
                 keyboardToolbarModifierHandler(
                     fnActive,
-                    "FN+",
-                    null
+                    "",
+                    ""
                 ) { /* No need for action here */ }
             }
 
