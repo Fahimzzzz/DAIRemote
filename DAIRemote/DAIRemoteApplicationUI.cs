@@ -30,6 +30,8 @@ public partial class DAIRemoteApplicationUI : Form
 
         this.Icon = new Icon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "DAIRemoteLogo.ico"));
         trayIconManager = new TrayIconManager(this);
+
+        this.WindowState = FormWindowState.Minimized;
         this.FormClosing += DAIRemoteApplicationUI_FormClosing;
         this.StartPosition = FormStartPosition.CenterScreen;
 
@@ -206,6 +208,7 @@ public partial class DAIRemoteApplicationUI : Form
         if (e.CloseReason == CloseReason.UserClosing)
         {
             this.Hide();
+            trayIconManager.minimized = true;
             e.Cancel = true;
         }
     }
@@ -393,6 +396,7 @@ public partial class DAIRemoteApplicationUI : Form
         if (FormWindowState.Minimized == this.WindowState)
         {
             this.Hide();
+            trayIconManager.minimized = true;
         }
     }
 }

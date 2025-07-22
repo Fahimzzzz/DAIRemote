@@ -9,6 +9,7 @@ public class TrayIconManager
     private readonly Form form;
     private readonly HotkeyManager hotkeyManager;
     private readonly AudioManager.AudioDeviceManager audioManager;
+    public bool minimized = true;
 
     private readonly Image aboutIcon;
     private readonly Image deleteProfileIcon;
@@ -419,9 +420,16 @@ public class TrayIconManager
 
     private void ShowForm()
     {
-        form.Show();
-        form.WindowState = FormWindowState.Normal;
-        form.Activate();
+        minimized = !minimized;
+        if(!minimized)
+        {
+            form.Show();
+            form.WindowState = FormWindowState.Normal;
+            form.Activate();
+        } else
+        {
+            form.Hide();
+        }
     }
 
     private void OnExit(object sender, EventArgs e)

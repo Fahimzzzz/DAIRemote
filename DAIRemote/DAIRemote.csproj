@@ -12,9 +12,73 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
 	<DebugType>embedded</DebugType>
+	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\About.ico" />
+    <None Remove="Resources\AddProfile.ico" />
+    <None Remove="Resources\Audio.ico" />
+    <None Remove="Resources\AudioCycling.ico" />
+    <None Remove="Resources\DAIRemoteLogo.ico" />
+    <None Remove="Resources\DAIRemoteLogo.png" />
+    <None Remove="Resources\DeleteProfile.ico" />
+    <None Remove="Resources\Exit.ico" />
+    <None Remove="Resources\Monitor.ico" />
+    <None Remove="Resources\MonitorSetHotkey.ico" />
+    <None Remove="Resources\SaveProfile.ico" />
+    <None Remove="Resources\TurnOffAllMonitors.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\About.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\AddProfile.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\AudioCycling.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DAIRemoteLogo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DAIRemoteLogo.png" />
+    <EmbeddedResource Include="Resources\DeleteProfile.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Exit.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Monitor.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\MonitorSetHotkey.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SaveProfile.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\TurnOffAllMonitors.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <BuildAction>None</BuildAction>
+    </EmbeddedResource>
+  </ItemGroup>
   
 
   <ItemGroup>
@@ -42,53 +106,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Resources\DAIRemoteLogo.ico">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\About.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\DeleteProfile.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\Exit.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\Monitor.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\SaveProfile.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\AddProfile.ico">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\TurnOffAllMonitors.ico">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  <BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\MonitorSetHotkey.ico">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  <BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\AudioCycling.ico">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  <BuildAction>None</BuildAction>
-	</None>
-	<None Update="Resources\Audio.ico">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  <BuildAction>None</BuildAction>
-	</None>
   </ItemGroup>
 
 </Project>
