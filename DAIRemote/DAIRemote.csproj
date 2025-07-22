@@ -5,7 +5,7 @@
 	<TargetFramework>net8.0-windows</TargetFramework>
 	<SelfContained>true</SelfContained>
 	<PublishSingleFile>true</PublishSingleFile>
-	<IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Nullable>enable</Nullable>
@@ -18,6 +18,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Properties\Resources\About.ico" />
+    <None Remove="Properties\Resources\AddProfile.ico" />
+    <None Remove="Properties\Resources\Audio.ico" />
+    <None Remove="Properties\Resources\AudioCycling.ico" />
+    <None Remove="Properties\Resources\DAIRemoteLogo.ico" />
+    <None Remove="Properties\Resources\DAIRemoteLogo.png" />
+    <None Remove="Properties\Resources\DeleteProfile.ico" />
+    <None Remove="Properties\Resources\Exit.ico" />
+    <None Remove="Properties\Resources\Monitor.ico" />
+    <None Remove="Properties\Resources\MonitorSetHotkey.ico" />
+    <None Remove="Properties\Resources\SaveProfile.ico" />
+    <None Remove="Properties\Resources\TurnOffAllMonitors.ico" />
     <None Remove="Resources\About.ico" />
     <None Remove="Resources\AddProfile.ico" />
     <None Remove="Resources\Audio.ico" />
@@ -33,6 +45,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources\About.ico" />
+    <EmbeddedResource Include="Properties\Resources\AddProfile.ico" />
+    <EmbeddedResource Include="Properties\Resources\Audio.ico" />
+    <EmbeddedResource Include="Properties\Resources\AudioCycling.ico" />
+    <EmbeddedResource Include="Properties\Resources\DAIRemoteLogo.ico" />
+    <EmbeddedResource Include="Properties\Resources\DAIRemoteLogo.png" />
+    <EmbeddedResource Include="Properties\Resources\DeleteProfile.ico" />
+    <EmbeddedResource Include="Properties\Resources\Exit.ico" />
+    <EmbeddedResource Include="Properties\Resources\Monitor.ico" />
+    <EmbeddedResource Include="Properties\Resources\MonitorSetHotkey.ico" />
+    <EmbeddedResource Include="Properties\Resources\SaveProfile.ico" />
+    <EmbeddedResource Include="Properties\Resources\TurnOffAllMonitors.ico" />
     <EmbeddedResource Include="Resources\About.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <BuildAction>None</BuildAction>

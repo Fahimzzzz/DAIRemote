@@ -28,7 +28,7 @@ public partial class DAIRemoteApplicationUI : Form
 
         InitializeComponent();
 
-        this.Icon = new Icon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "DAIRemoteLogo.ico"));
+        this.Icon = Properties.Resources.DAIRemoteLogoIcon;
         trayIconManager = new TrayIconManager(this);
 
         this.WindowState = FormWindowState.Minimized;
@@ -70,7 +70,7 @@ public partial class DAIRemoteApplicationUI : Form
             {
                 Width = 100,
                 Height = 100,
-                BackgroundImage = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Monitor.ico")),
+                BackgroundImage = Properties.Resources.Monitor,
                 BackgroundImageLayout = ImageLayout.Center,
                 Tag = profile
             };

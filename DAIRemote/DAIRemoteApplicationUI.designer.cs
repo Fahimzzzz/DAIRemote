@@ -75,12 +75,12 @@
             this.DisplayLoadProfilesLayout.AutoScroll = true;
             this.DisplayLoadProfilesLayout.Location = new Point(283, 32);
             this.DisplayLoadProfilesLayout.Name = "DisplayLoadProfilesLayout";
-            this.DisplayLoadProfilesLayout.Size = new Size(336, 317);
+            this.DisplayLoadProfilesLayout.Size = new Size(336, 328);
             this.DisplayLoadProfilesLayout.TabIndex = 6;
             // 
             // DAIRemoteLogo
             // 
-            this.DAIRemoteLogo.Image = Properties.Resources.DAIRemoteLogo;
+            this.DAIRemoteLogo.Image = Properties.Resources.DAIRemoteLogoImage;
             this.DAIRemoteLogo.Location = new Point(59, 0);
             this.DAIRemoteLogo.Margin = new Padding(3, 2, 3, 2);
             this.DAIRemoteLogo.Name = "DAIRemoteLogo";
