@@ -15,7 +15,6 @@ public class TrayIconManager
     private readonly Image exitIcon;
     private readonly Image monitorIcon;
     private readonly Image saveProfileIcon;
-    private readonly Image turnOffAllMonitorsIcon;
     private readonly Image addProfileIcon;
     private readonly Image setHotkeyIcon;
     private readonly Image audioCyclingIcon;
@@ -30,7 +29,6 @@ public class TrayIconManager
         exitIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Exit.ico"));
         monitorIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Monitor.ico"));
         saveProfileIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "SaveProfile.ico"));
-        turnOffAllMonitorsIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "TurnOffAllMonitors.ico"));
         addProfileIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "AddProfile.ico"));
         setHotkeyIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "MonitorSetHotkey.ico"));
         audioCyclingIcon = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "AudioCycling.ico"));
@@ -281,14 +279,12 @@ public class TrayIconManager
         // That was not present during application initialization
         ToolStripMenuItem refreshAudioDevices = new("Refresh Audio Devices", audioIcon, RefreshAudioDevices);
         // Create the icons for making monitors sleep, the about section, and exiting the application
-        ToolStripMenuItem turnOffAllMonitorsItem = new("Turn Off All Monitors", turnOffAllMonitorsIcon, TurnOffMonitors);
         ToolStripMenuItem aboutMenuItem = new("About", aboutIcon, OnAboutClick);
         ToolStripMenuItem exitMenuItem = new("Exit", exitIcon, OnExit);
 
         // Separate sleeping monitors, and add the sleep, about, and exit to the main system tray menu
         _ = menu.Items.Add(new ToolStripSeparator());
         _ = menu.Items.Add(refreshAudioDevices);
-        _ = menu.Items.Add(turnOffAllMonitorsItem);
         _ = menu.Items.Add(new ToolStripSeparator());
         _ = menu.Items.Add(aboutMenuItem);
         _ = menu.Items.Add(exitMenuItem);
@@ -392,11 +388,6 @@ public class TrayIconManager
     private void RefreshAudioDevices(object? sender, EventArgs e)
     {
         audioManager.RefreshAudioDeviceSubscriptions();
-    }
-
-    private void TurnOffMonitors(object? sender, EventArgs e)
-    {
-        DisplayConfig.DisplayToggleSleep(true);
     }
 
     private void OnAboutClick(object? sender, EventArgs e)

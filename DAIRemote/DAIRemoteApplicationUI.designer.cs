@@ -21,14 +21,12 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DAIRemoteApplicationUI));
             this.BtnSaveDisplayConfig = new Button();
             this.checkBoxStartup = new CheckBox();
             this.BtnCycleAudioOutputs = new Button();
             this.DisplayLoadProfilesLayout = new FlowLayoutPanel();
             this.Logo = new PictureBox();
             this.LogoName = new TextBox();
-            this.Description = new TextBox();
             this.LoadProfile = new TextBox();
             this.AudioCycleHotkey = new Button();
             this.DisplayProfileHotkey = new Button();
@@ -40,7 +38,7 @@
             // 
             this.BtnSaveDisplayConfig.AccessibleName = "BtnSaveDisplayConfig";
             this.BtnSaveDisplayConfig.BackColor = Color.LightSkyBlue;
-            this.BtnSaveDisplayConfig.Location = new Point(20, 209);
+            this.BtnSaveDisplayConfig.Location = new Point(12, 97);
             this.BtnSaveDisplayConfig.Name = "BtnSaveDisplayConfig";
             this.BtnSaveDisplayConfig.Size = new Size(200, 40);
             this.BtnSaveDisplayConfig.TabIndex = 0;
@@ -52,7 +50,7 @@
             // 
             this.checkBoxStartup.AutoSize = true;
             this.checkBoxStartup.ForeColor = SystemColors.Control;
-            this.checkBoxStartup.Location = new Point(20, 396);
+            this.checkBoxStartup.Location = new Point(12, 284);
             this.checkBoxStartup.Name = "checkBoxStartup";
             this.checkBoxStartup.Size = new Size(184, 19);
             this.checkBoxStartup.TabIndex = 4;
@@ -64,7 +62,7 @@
             // 
             this.BtnCycleAudioOutputs.AccessibleName = "BtnCycleAudioOutputs";
             this.BtnCycleAudioOutputs.BackColor = Color.LightSkyBlue;
-            this.BtnCycleAudioOutputs.Location = new Point(20, 255);
+            this.BtnCycleAudioOutputs.Location = new Point(12, 143);
             this.BtnCycleAudioOutputs.Name = "BtnCycleAudioOutputs";
             this.BtnCycleAudioOutputs.Size = new Size(200, 40);
             this.BtnCycleAudioOutputs.TabIndex = 5;
@@ -105,20 +103,6 @@
             this.LogoName.TabIndex = 9;
             this.LogoName.Text = "DAIRemote";
             // 
-            // Description
-            // 
-            this.Description.BackColor = Color.FromArgb(50, 50, 50);
-            this.Description.BorderStyle = BorderStyle.None;
-            this.Description.ForeColor = Color.White;
-            this.Description.Location = new Point(12, 91);
-            this.Description.Margin = new Padding(3, 2, 3, 2);
-            this.Description.Multiline = true;
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
-            this.Description.Size = new Size(242, 120);
-            this.Description.TabIndex = 10;
-            this.Description.Text = resources.GetString("Description.Text");
-            // 
             // LoadProfile
             // 
             this.LoadProfile.BackColor = Color.FromArgb(50, 50, 50);
@@ -138,7 +122,7 @@
             // 
             this.AudioCycleHotkey.AccessibleName = "BtnSetAudioCycleHotkey";
             this.AudioCycleHotkey.BackColor = Color.LightSkyBlue;
-            this.AudioCycleHotkey.Location = new Point(20, 301);
+            this.AudioCycleHotkey.Location = new Point(12, 189);
             this.AudioCycleHotkey.Name = "AudioCycleHotkey";
             this.AudioCycleHotkey.Size = new Size(200, 40);
             this.AudioCycleHotkey.TabIndex = 13;
@@ -150,7 +134,7 @@
             // 
             this.DisplayProfileHotkey.AccessibleName = "BtnSetDisplayProfileHotkey";
             this.DisplayProfileHotkey.BackColor = Color.LightSkyBlue;
-            this.DisplayProfileHotkey.Location = new Point(20, 347);
+            this.DisplayProfileHotkey.Location = new Point(12, 235);
             this.DisplayProfileHotkey.Name = "DisplayProfileHotkey";
             this.DisplayProfileHotkey.Size = new Size(200, 40);
             this.DisplayProfileHotkey.TabIndex = 14;
@@ -162,7 +146,7 @@
             // 
             this.AudioComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             this.AudioComboBox.FormattingEnabled = true;
-            this.AudioComboBox.Location = new Point(20, 418);
+            this.AudioComboBox.Location = new Point(12, 306);
             this.AudioComboBox.Name = "AudioComboBox";
             this.AudioComboBox.Size = new Size(257, 23);
             this.AudioComboBox.TabIndex = 15;
@@ -173,12 +157,11 @@
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.ClientSize = new Size(631, 453);
+            this.ClientSize = new Size(631, 398);
             this.Controls.Add(this.AudioComboBox);
             this.Controls.Add(this.DisplayProfileHotkey);
             this.Controls.Add(this.AudioCycleHotkey);
             this.Controls.Add(this.LoadProfile);
-            this.Controls.Add(this.Description);
             this.Controls.Add(this.LogoName);
             this.Controls.Add(this.Logo);
             this.Controls.Add(this.DisplayLoadProfilesLayout);
@@ -201,7 +184,6 @@
         private FlowLayoutPanel DisplayLoadProfilesLayout;
         private PictureBox Logo;
         private TextBox LogoName;
-        private TextBox Description;
         private TextBox LoadProfile;
         private Button AudioCycleHotkey;
         private Button DisplayProfileHotkey;
