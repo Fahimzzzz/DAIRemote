@@ -1,7 +1,6 @@
 package com.example.dairemote_app.utils
 
 import android.os.Build
-import android.util.Log
 import com.example.dairemote_app.HostSearchCallback
 import java.io.IOException
 import java.net.DatagramPacket
@@ -313,6 +312,9 @@ class ConnectionManager(serverAddress: String) {
         }
 
         fun getUDPSocket(): DatagramSocket {
+            if (udpSocket.isClosed) {
+                setUDPSocket(DatagramSocket())
+            }
             return udpSocket
         }
 
@@ -346,9 +348,6 @@ class ConnectionManager(serverAddress: String) {
 
         @Throws(IOException::class)
         fun sendData(message: String, address: InetAddress?) {
-            if (getUDPSocket().isClosed) {
-                setUDPSocket(DatagramSocket())
-            }
             sendData = message.toByteArray()
             sendPacket = DatagramPacket(sendData, sendData.size, address, getPort())
             getUDPSocket().send(sendPacket)
@@ -388,9 +387,6 @@ class ConnectionManager(serverAddress: String) {
         private fun hostSearch(message: String) {
             val hosts: MutableList<String> = ArrayList()
             try {
-                if (getUDPSocket().isClosed) {
-                    setUDPSocket(DatagramSocket())
-                }
                 getUDPSocket().broadcast = true
                 sendData(message + " " + getDeviceName(), broadcastAddress)
                 getUDPSocket().soTimeout =

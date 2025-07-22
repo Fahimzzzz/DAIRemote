@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.core.ktx)
     implementation(libs.jmdns)
+    implementation(libs.swiperefreshlayout)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.ext.junit)

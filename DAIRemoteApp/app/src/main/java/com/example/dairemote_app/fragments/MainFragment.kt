@@ -89,44 +89,6 @@ class MainFragment : Fragment() {
                 is ConnectionViewModel.HostSearchResult.Success -> {
                     handleHostSearchSuccess(result.hosts)
                 }
-                is ConnectionViewModel.HostSearchResult.Success -> {
-                    if (result.hosts.isNotEmpty()) {
-                        // Take the first host found
-                        val selectedHost = result.hosts[0]
-                        viewModel.connectionManager = ConnectionManager(selectedHost)
-
-                        viewModel.connectionManager.let { manager ->
-                            // Move connection initialization to a background thread
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val connectionResult = manager?.initializeConnection()
-
-                                // Switch back to main thread for UI updates
-                                withContext(Dispatchers.Main) {
-                                    if (connectionResult != null) {
-                                        viewModel.updateConnectionState(connectionResult)
-                                    }
-                                    if (connectionResult != null) {
-                                        manager.setConnectionEstablished(connectionResult)
-                                    }
-                                    if (connectionResult == true) {
-                                        // Connection successful
-                                        notifyUser("Connection approved")
-                                        // Ensure fragment is still attached before navigating
-                                        if (isAdded && !isDetached) {
-                                            findNavController().navigate(R.id.action_to_interaction)
-                                        }
-                                    } else {
-                                        // Connection failed
-                                        notifyUser("Denied connection")
-                                        manager?.resetConnectionManager()
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        notifyUser("No hosts found")
-                    }
-                }
 
                 is ConnectionViewModel.HostSearchResult.Error -> {
                     notifyUser(result.message)

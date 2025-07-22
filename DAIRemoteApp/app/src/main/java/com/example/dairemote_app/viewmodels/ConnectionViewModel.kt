@@ -54,20 +54,20 @@ class ConnectionViewModel : ViewModel() {
     }
 
     // Search for hosts in the background
-    fun searchForHosts(): LiveData<HostSearchResult> {
+    fun searchForHosts(message: String = "Hello, I'm"): LiveData<HostSearchResult> {
         val result = MutableLiveData<HostSearchResult>()
 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 ConnectionManager.hostSearchInBackground(object : HostSearchCallback {
                     override fun onHostFound(serverIps: List<String>) {
-                        result.postValue(HostSearchResult.Success(serverIps))
+                        result.postValue(HostSearchResult.Success(serverIps.distinct()))
                     }
 
                     override fun onError(error: String) {
                         result.postValue(HostSearchResult.Error(error))
                     }
-                }, "Hello, I'm")
+                }, message)
             }
         }
 

@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ProgressBar
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.dairemote_app.HostSearchCallback
 import com.example.dairemote_app.R
 import com.example.dairemote_app.databinding.FragmentServersBinding
 import com.example.dairemote_app.utils.ConnectionManager
+import com.example.dairemote_app.utils.SharedPrefsHelper
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.ExecutorService
@@ -29,8 +29,8 @@ class ServersFragment : Fragment() {
     private lateinit var adapter: ArrayAdapter<String>
     lateinit var addServer: FloatingActionButton
     private lateinit var executor: ExecutorService
-    private lateinit var connectionProgress: ProgressBar
     private lateinit var viewModel: ConnectionViewModel
+    private lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +46,7 @@ class ServersFragment : Fragment() {
 
         // Initialize ViewModel
         viewModel = ViewModelProvider(requireActivity())[ConnectionViewModel::class.java]
+        sharedPrefsHelper = SharedPrefsHelper(requireContext())
 
         setupViews()
         setupListeners()
@@ -53,12 +54,33 @@ class ServersFragment : Fragment() {
     }
 
     private fun setupViews() {
-        adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, availableHosts)
+        // Create a custom adapter to show stars for saved hosts
+        adapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.list_item_host,  // You'll need to create this layout
+            R.id.host_text_view,     // ID of TextView in your custom layout
+            availableHosts
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent)
+                val host = getItem(position)
+                val savedHost = sharedPrefsHelper.getLastConnectedHost()
+
+                // Find the star icon in your custom layout
+                val starIcon = view.findViewById<ImageView>(R.id.star_icon)
+                starIcon.visibility = if (host == savedHost) View.VISIBLE else View.GONE
+
+                return view
+            }
+        }
+
         binding.hostList.adapter = adapter
         executor = Executors.newSingleThreadExecutor()
 
-        connectionProgress = binding.connectionLoading
+        // Setup swipe-to-refresh
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            searchHosts()
+        }
     }
 
     private fun setupListeners() {
@@ -66,23 +88,69 @@ class ServersFragment : Fragment() {
             attemptConnection(availableHosts[position])
         }
 
+        // Long press to forget host
+        binding.hostList.setOnItemLongClickListener { _, _, position, _ ->
+            val host = availableHosts[position]
+            val savedHost = sharedPrefsHelper.getLastConnectedHost()
+
+            if (host == savedHost) {
+                showForgetHostDialog(host)
+            }
+
+            true
+        }
+
         binding.addServerBtn.setOnClickListener {
             showAddServerDialog()
         }
     }
 
-    private fun searchHosts() {
-        ConnectionManager.hostSearchInBackground(object : HostSearchCallback {
-            override fun onHostFound(hosts: List<String>) {
-                availableHosts.clear()
-                availableHosts.addAll(hosts)
-                requireActivity().runOnUiThread { adapter.notifyDataSetChanged() }
+    private fun showForgetHostDialog(host: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Forget Host")
+            .setMessage("Do you want to forget $host?")
+            .setPositiveButton("Forget") { _, _ ->
+                sharedPrefsHelper.clearLastConnectedHost()
+                adapter.notifyDataSetChanged() // Refresh the list to remove the star
+                Toast.makeText(requireContext(), "Host forgotten", Toast.LENGTH_SHORT).show()
             }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
-            override fun onError(error: String) {
-                notifyUser(error)
+    private fun searchHosts() {
+        binding.swipeRefreshLayout.isRefreshing = true
+
+        viewModel.searchForHosts("Hello, DAIRemote").observe(viewLifecycleOwner) { result ->
+
+            when (result) {
+                is ConnectionViewModel.HostSearchResult.Success -> {
+                    availableHosts.clear()
+                    availableHosts.addAll(result.hosts)
+
+                    // Highlight the saved host if it exists in the list
+                    val savedHost = sharedPrefsHelper.getLastConnectedHost()
+                    if (savedHost != null && result.hosts.contains(savedHost)) {
+                        // You might want to add visual indication here
+                        // For example, move it to the top of the list
+                        availableHosts.remove(savedHost)
+                        availableHosts.add(0, savedHost)
+                    }
+
+                    requireActivity().runOnUiThread {
+                        adapter.notifyDataSetChanged()
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                }
+
+                is ConnectionViewModel.HostSearchResult.Error -> {
+                    requireActivity().runOnUiThread {
+                        notifyUser(result.message)
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                }
             }
-        }, "Hello, DAIRemote")
+        }
     }
 
     private fun showAddServerDialog() {
@@ -111,56 +179,65 @@ class ServersFragment : Fragment() {
 
     private fun initiateInteractionPage(message: String) {
         notifyUser(message)
-        // Navigate to InteractionPage fragment or activity
         findNavController().navigate(R.id.action_to_interaction)
     }
 
     private fun priorConnectionEstablishedCheck(host: String): Boolean {
         viewModel.connectionManager?.let { manager ->
             if (manager.getConnectionEstablished()) {
-                // Safe to call getServerAddress() only if connection is established
-                if (host != ConnectionManager.getServerAddress()) {
+                if (host != viewModel.getSavedHost(requireContext())) {
                     // Stop the current connection before attempting a new one
                     manager.shutdown()
+                    viewModel.updateConnectionState(false)
+                    viewModel.connectionManager = null // Clear the old manager
+                    return false // Allow new connection attempt
                 } else {
                     initiateInteractionPage("Already connected")
+                    return true
                 }
-                return true
             }
         }
         return false
     }
 
     private fun attemptConnection(server: String) {
-        requireActivity().runOnUiThread { connectionProgress.visibility = View.VISIBLE }
+        binding.connectionLoading.visibility = View.VISIBLE
 
         if (!priorConnectionEstablishedCheck(server)) {
             viewModel.connectionManager = ConnectionManager(server)
             val manager = viewModel.connectionManager ?: run {
-                requireActivity().runOnUiThread {
-                    connectionProgress.visibility = View.GONE
-                    notifyUser("Connection manager initialization failed")
-                }
+                binding.connectionLoading.visibility = View.GONE
+                notifyUser("Connection manager initialization failed")
                 return
             }
 
-            if (!executor.isShutdown) {
-                executor.execute {
-                    if (manager.initializeConnection()) {
-                        requireActivity().runOnUiThread {
-                            connectionProgress.visibility = View.GONE
+            executor.execute {
+                try {
+                    val connectionResult = manager.initializeConnection()
+
+                    requireActivity().runOnUiThread {
+                        binding.connectionLoading.visibility = View.GONE
+
+                        if (connectionResult) {
+                            // Save the successful connection
+                            sharedPrefsHelper.saveLastConnectedHost(server)
+                            adapter.notifyDataSetChanged() // Update star visibility
                             initiateInteractionPage("Connected to: $server")
-                        }
-                    } else {
-                        requireActivity().runOnUiThread {
-                            connectionProgress.visibility = View.GONE
+                        } else {
                             notifyUser("Connection failed")
+                            manager.resetConnectionManager()
                         }
+                    }
+                } catch (e: Exception) {
+                    requireActivity().runOnUiThread {
+                        binding.connectionLoading.visibility = View.GONE
+                        notifyUser("Connection error: ${e.message}")
                         manager.resetConnectionManager()
                     }
-                    executor.shutdownNow()
                 }
             }
+        } else {
+            binding.connectionLoading.visibility = View.GONE
         }
     }
 
