@@ -38,11 +38,7 @@
             // 
             this.BtnSaveDisplayConfig.AccessibleName = "BtnSaveDisplayConfig";
             this.BtnSaveDisplayConfig.BackColor = Color.LightSkyBlue;
-<<<<<<< HEAD
-            this.BtnSaveDisplayConfig.Location = new Point(12, 97);
-=======
-            this.BtnSaveDisplayConfig.Location = new Point(12, 137);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.BtnSaveDisplayConfig.Location = new Point(12, 132);
             this.BtnSaveDisplayConfig.Name = "BtnSaveDisplayConfig";
             this.BtnSaveDisplayConfig.Size = new Size(200, 40);
             this.BtnSaveDisplayConfig.TabIndex = 0;
@@ -54,11 +50,7 @@
             // 
             this.checkBoxStartup.AutoSize = true;
             this.checkBoxStartup.ForeColor = SystemColors.Control;
-<<<<<<< HEAD
-            this.checkBoxStartup.Location = new Point(12, 284);
-=======
-            this.checkBoxStartup.Location = new Point(12, 324);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.checkBoxStartup.Location = new Point(12, 345);
             this.checkBoxStartup.Name = "checkBoxStartup";
             this.checkBoxStartup.Size = new Size(184, 19);
             this.checkBoxStartup.TabIndex = 4;
@@ -70,11 +62,7 @@
             // 
             this.BtnCycleAudioOutputs.AccessibleName = "BtnCycleAudioOutputs";
             this.BtnCycleAudioOutputs.BackColor = Color.LightSkyBlue;
-<<<<<<< HEAD
-            this.BtnCycleAudioOutputs.Location = new Point(12, 143);
-=======
-            this.BtnCycleAudioOutputs.Location = new Point(12, 183);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.BtnCycleAudioOutputs.Location = new Point(12, 178);
             this.BtnCycleAudioOutputs.Name = "BtnCycleAudioOutputs";
             this.BtnCycleAudioOutputs.Size = new Size(200, 40);
             this.BtnCycleAudioOutputs.TabIndex = 5;
@@ -87,13 +75,13 @@
             this.DisplayLoadProfilesLayout.AutoScroll = true;
             this.DisplayLoadProfilesLayout.Location = new Point(283, 32);
             this.DisplayLoadProfilesLayout.Name = "DisplayLoadProfilesLayout";
-            this.DisplayLoadProfilesLayout.Size = new Size(336, 337);
+            this.DisplayLoadProfilesLayout.Size = new Size(336, 317);
             this.DisplayLoadProfilesLayout.TabIndex = 6;
             // 
             // DAIRemoteLogo
             // 
             this.DAIRemoteLogo.Image = Properties.Resources.DAIRemoteLogo;
-            this.DAIRemoteLogo.Location = new Point(62, 11);
+            this.DAIRemoteLogo.Location = new Point(59, 0);
             this.DAIRemoteLogo.Margin = new Padding(3, 2, 3, 2);
             this.DAIRemoteLogo.Name = "DAIRemoteLogo";
             this.DAIRemoteLogo.Size = new Size(98, 92);
@@ -134,11 +122,7 @@
             // 
             this.AudioCycleHotkey.AccessibleName = "BtnSetAudioCycleHotkey";
             this.AudioCycleHotkey.BackColor = Color.LightSkyBlue;
-<<<<<<< HEAD
-            this.AudioCycleHotkey.Location = new Point(12, 189);
-=======
-            this.AudioCycleHotkey.Location = new Point(12, 229);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.AudioCycleHotkey.Location = new Point(12, 224);
             this.AudioCycleHotkey.Name = "AudioCycleHotkey";
             this.AudioCycleHotkey.Size = new Size(200, 40);
             this.AudioCycleHotkey.TabIndex = 13;
@@ -150,11 +134,7 @@
             // 
             this.DisplayProfileHotkey.AccessibleName = "BtnSetDisplayProfileHotkey";
             this.DisplayProfileHotkey.BackColor = Color.LightSkyBlue;
-<<<<<<< HEAD
-            this.DisplayProfileHotkey.Location = new Point(12, 235);
-=======
-            this.DisplayProfileHotkey.Location = new Point(12, 275);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.DisplayProfileHotkey.Location = new Point(12, 270);
             this.DisplayProfileHotkey.Name = "DisplayProfileHotkey";
             this.DisplayProfileHotkey.Size = new Size(200, 40);
             this.DisplayProfileHotkey.TabIndex = 14;
@@ -166,11 +146,7 @@
             // 
             this.AudioComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             this.AudioComboBox.FormattingEnabled = true;
-<<<<<<< HEAD
-            this.AudioComboBox.Location = new Point(12, 306);
-=======
-            this.AudioComboBox.Location = new Point(12, 346);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.AudioComboBox.Location = new Point(12, 316);
             this.AudioComboBox.Name = "AudioComboBox";
             this.AudioComboBox.Size = new Size(257, 23);
             this.AudioComboBox.TabIndex = 15;
@@ -181,11 +157,7 @@
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(50, 50, 50);
-<<<<<<< HEAD
-            this.ClientSize = new Size(631, 398);
-=======
-            this.ClientSize = new Size(631, 377);
->>>>>>> 74be7c1 (Implemented showing and hiding form upon each left mouse button double click on the tray icon.)
+            this.ClientSize = new Size(631, 372);
             this.Controls.Add(this.AudioComboBox);
             this.Controls.Add(this.DisplayProfileHotkey);
             this.Controls.Add(this.AudioCycleHotkey);
