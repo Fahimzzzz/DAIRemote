@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.dairemote_app.R
 import com.example.dairemote_app.databinding.FragmentMainBinding
 import com.example.dairemote_app.utils.ConnectionManager
+import com.example.dairemote_app.utils.SharedPrefsHelper
 import com.example.dairemote_app.utils.TutorialMediator
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,7 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ConnectionViewModel by activityViewModels()
+    private lateinit var sharedPrefsHelper: SharedPrefsHelper
     private val tutorial by lazy {
         TutorialMediator.GetInstance(AlertDialog.Builder(requireContext()))
     }
@@ -41,6 +43,14 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        sharedPrefsHelper = SharedPrefsHelper(requireContext())
+
+        // Check for saved host and attempt automatic connection
+        val savedHost = sharedPrefsHelper.getLastConnectedHost()
+        if (savedHost != null && viewModel.connectionState.value != true) {
+            attemptConnection()
+        }
 
         setupBackPressHandler()
 
@@ -76,6 +86,9 @@ class MainFragment : Fragment() {
             binding.connectionLoading.visibility = View.GONE
 
             when (result) {
+                is ConnectionViewModel.HostSearchResult.Success -> {
+                    handleHostSearchSuccess(result.hosts)
+                }
                 is ConnectionViewModel.HostSearchResult.Success -> {
                     if (result.hosts.isNotEmpty()) {
                         // Take the first host found
@@ -120,6 +133,68 @@ class MainFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun handleHostSearchSuccess(hosts: List<String>) {
+        when {
+            hosts.isEmpty() -> {
+                notifyUser("No hosts found")
+            }
+            hosts.size == 1 -> {
+                // Only one host available - connect automatically
+                connectToHost(hosts[0])
+            }
+            else -> {
+                // Multiple hosts available - check for previous connection
+                val lastConnectedHost = sharedPrefsHelper.getLastConnectedHost()
+                if (lastConnectedHost != null && hosts.contains(lastConnectedHost)) {
+                    // Previous host found in list - connect automatically
+                    connectToHost(lastConnectedHost)
+                } else {
+                    // No previous host or not in list - show selection
+                    showHostSelectionDialog(hosts)
+                }
+            }
+        }
+    }
+
+    private fun connectToHost(hostAddress: String) {
+        viewModel.connectionManager = ConnectionManager(hostAddress)
+        sharedPrefsHelper.saveLastConnectedHost(hostAddress)
+
+        viewModel.connectionManager.let { manager ->
+            CoroutineScope(Dispatchers.IO).launch {
+                val connectionResult = manager?.initializeConnection()
+
+                withContext(Dispatchers.Main) {
+                    if (connectionResult != null) {
+                        viewModel.updateConnectionState(connectionResult)
+                        manager.setConnectionEstablished(connectionResult)
+                    }
+
+                    if (connectionResult == true) {
+                        notifyUser("Connection approved")
+                        if (isAdded && !isDetached) {
+                            findNavController().navigate(R.id.action_to_interaction)
+                        }
+                    } else {
+                        notifyUser("Denied connection")
+                        sharedPrefsHelper.clearLastConnectedHost()
+                        manager?.resetConnectionManager()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showHostSelectionDialog(hosts: List<String>) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select a host")
+            .setItems(hosts.toTypedArray()) { _, which ->
+                connectToHost(hosts[which])
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun notifyUser(message: String) {

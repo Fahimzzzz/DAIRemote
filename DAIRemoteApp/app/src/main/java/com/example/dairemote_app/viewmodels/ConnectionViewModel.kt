@@ -1,11 +1,13 @@
 package com.example.dairemote_app.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dairemote_app.HostSearchCallback
 import com.example.dairemote_app.utils.ConnectionManager
+import com.example.dairemote_app.utils.SharedPrefsHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +42,10 @@ class ConnectionViewModel : ViewModel() {
 
     fun updateConnectionState(isConnected: Boolean) {
         _connectionState.value = isConnected
+    }
+
+    fun getSavedHost(context: Context): String? {
+        return SharedPrefsHelper(context).getLastConnectedHost()
     }
 
     sealed class HostSearchResult {
