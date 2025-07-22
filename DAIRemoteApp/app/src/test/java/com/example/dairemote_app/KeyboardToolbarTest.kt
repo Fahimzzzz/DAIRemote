@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.example.dairemote_app.fragments.KeyboardToolbar
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -146,14 +147,8 @@ internal class KeyboardToolbarTest {
         )
     }
 
-    companion object {
-        private var keyboardToolbar: KeyboardToolbar? = null
-
-        @JvmStatic
-        @AfterAll
-        fun cleanup(): Unit {
-            keyboardToolbar!!.resetKeyboardModifiers()
-            keyboardToolbar = null
-        }
+    @AfterEach
+    fun cleanup() {
+        keyboardToolbar.resetKeyboardModifiers()
     }
 }

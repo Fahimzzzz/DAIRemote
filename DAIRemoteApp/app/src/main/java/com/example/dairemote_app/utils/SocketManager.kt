@@ -35,6 +35,10 @@ class SocketManager internal constructor(address: InetAddress, port: Int) {
         return this.socket
     }
 
+    fun getRawSocket(): DatagramSocket {
+        return this.socket
+    }
+
     fun closeSocket() {
         if (!socket.isClosed) {
             socket.close()

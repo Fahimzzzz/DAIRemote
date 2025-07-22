@@ -67,13 +67,11 @@ class TutorialMediator : IBuilderTemplate {
 
     override fun BuilderWindowPosition(window: Window, gravity: Int, xOffset: Int, yOffset: Int) {
         // sets custom position
-        if (window != null) {
-            val params = window.attributes
-            params.gravity = gravity
-            params.x = xOffset
-            params.y = yOffset
-            window.attributes = params
-        }
+        val params = window.attributes
+        params.gravity = gravity
+        params.x = xOffset
+        params.y = yOffset
+        window.attributes = params
     }
 
     fun builderStartBtn(builder: AlertDialog.Builder?) {
