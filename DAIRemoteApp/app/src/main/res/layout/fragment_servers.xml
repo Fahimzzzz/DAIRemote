@@ -77,7 +77,6 @@
         app:layout_constraintBottom_toTopOf="@+id/addServerBtn"
         app:layout_constraintEnd_toEndOf="@+id/addServerBtn"
         app:layout_constraintStart_toStartOf="@+id/addServerBtn"
-        app:layout_constraintTop_toTopOf="@+id/hostList"
         tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
