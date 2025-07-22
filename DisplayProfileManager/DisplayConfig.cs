@@ -1331,7 +1331,7 @@ public class DisplayConfig
     [DllImport("user32.dll")]
     private static extern int PostMessage(int hWnd, int hMsg, int wParam, int lParam);
 
-    public static void DisplayToggleSleep(bool sleep = true)
+/*    public static void DisplayToggleSleep(bool sleep = true)
     {
         const int WM_SYSCOMMAND = 0x0112;
         const int SC_MONITORPOWER = 0xF170;
@@ -1350,7 +1350,7 @@ public class DisplayConfig
                 Thread.Sleep(100);
             });
         }
-    }
+    }*/
 
     static void Main()
     {
