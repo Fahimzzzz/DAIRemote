@@ -4,8 +4,7 @@ import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import com.example.dairemote_app.fragments.KeyboardToolbar
-import org.junit.jupiter.api.AfterAll
+import com.example.dairemote_app.utils.KeyboardToolbar
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach

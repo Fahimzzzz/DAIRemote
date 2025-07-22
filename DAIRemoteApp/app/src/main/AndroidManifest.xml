@@ -18,19 +18,7 @@
         android:theme="@style/Theme.DAIRemoteApp"
         tools:targetApi="31">
         <activity
-            android:name=".fragments.AboutFragment"
-            android:exported="false" />
-        <activity
-            android:name=".fragments.InstructionsFragment"
-            android:exported="false" />
-        <activity
-            android:name=".fragments.ServersFragment"
-            android:exported="false" />
-        <activity
-            android:name=".fragments.InteractionFragment"
-            android:exported="false" />
-        <activity
-            android:name=".fragments.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,5 +1,6 @@
 package com.example.dairemote_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -163,6 +164,13 @@ class MainFragment : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
+    fun moveAppToBackground() {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }
+
     private fun setupBackPressHandler() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -171,6 +179,10 @@ class MainFragment : Fragment() {
                 when {
                     drawerLayout.isDrawerOpen(GravityCompat.START) -> {
                         drawerLayout.closeDrawer(GravityCompat.START)
+                    }
+
+                    else -> {
+                        moveAppToBackground()
                     }
                 }
             }

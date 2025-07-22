@@ -8,7 +8,10 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -48,6 +51,7 @@ class ServersFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[ConnectionViewModel::class.java]
         sharedPrefsHelper = SharedPrefsHelper(requireContext())
 
+        setupBackPressHandler()
         setupViews()
         setupListeners()
         searchHosts()
@@ -239,6 +243,27 @@ class ServersFragment : Fragment() {
         } else {
             binding.connectionLoading.visibility = View.GONE
         }
+    }
+
+    private fun setupBackPressHandler() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val drawerLayout = requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout)
+
+                when {
+                    drawerLayout.isDrawerOpen(GravityCompat.START) -> {
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                    }
+
+                    else -> {
+                        findNavController().navigate(R.id.action_to_main)
+                    }
+                }
+            }
+        }
+
+        // Add the callback to the activity's back press dispatcher
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     override fun onDestroyView() {

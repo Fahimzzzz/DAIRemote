@@ -12,7 +12,6 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.GestureDetector
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -23,7 +22,6 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
@@ -47,6 +45,7 @@ import com.example.dairemote_app.utils.AudioRecyclerAdapter
 import com.example.dairemote_app.utils.BackspaceEditText
 import com.example.dairemote_app.utils.ConnectionMonitor
 import com.example.dairemote_app.utils.DisplayProfilesRecyclerAdapter
+import com.example.dairemote_app.utils.KeyboardToolbar
 import com.example.dairemote_app.utils.TutorialMediator
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import java.net.SocketException
@@ -227,10 +226,7 @@ class InteractionFragment : Fragment() {
                     }
 
                     else -> {
-                        // Let default back press behavior work
-                        isEnabled = false
-                        requireActivity().onBackPressed()
-                        requireActivity().onBackPressed()
+                        findNavController().navigate(R.id.action_to_main)
                     }
                 }
             }

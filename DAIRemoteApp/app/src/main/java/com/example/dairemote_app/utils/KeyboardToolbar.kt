@@ -1,4 +1,4 @@
-package com.example.dairemote_app.fragments
+package com.example.dairemote_app.utils
 
 import android.view.View
 import android.widget.GridLayout

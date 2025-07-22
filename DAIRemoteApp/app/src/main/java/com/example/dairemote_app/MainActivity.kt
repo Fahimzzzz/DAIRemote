@@ -1,4 +1,4 @@
-package com.example.dairemote_app.fragments
+package com.example.dairemote_app
 
 import android.os.Bundle
 import android.view.MenuItem
@@ -12,7 +12,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.dairemote_app.R
 import com.example.dairemote_app.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
