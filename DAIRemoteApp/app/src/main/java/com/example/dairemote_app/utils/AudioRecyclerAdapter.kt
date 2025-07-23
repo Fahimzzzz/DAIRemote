@@ -15,7 +15,7 @@ class AudioRecyclerAdapter(
     RecyclerView.Adapter<AudioRecyclerAdapter.OptionViewHolder>() {
     private var selectedPosition = -1
 
-    fun SetSelectedPosition(audioDevice: String) {
+    fun setSelectedPosition(audioDevice: String) {
         val position = audioDevices.indexOf(audioDevice)
         if (position != -1) {
             val previousPosition = selectedPosition
@@ -28,7 +28,7 @@ class AudioRecyclerAdapter(
         }
     }
 
-    fun CyclePosition() {
+    fun cyclePosition() {
         if (selectedPosition != -1) {
             val previousPosition = selectedPosition
             selectedPosition = (selectedPosition + 1) % audioDevices.size
@@ -41,7 +41,8 @@ class AudioRecyclerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.audio_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.interaction_list_item, parent, false)
         return OptionViewHolder(view)
     }
 

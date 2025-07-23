@@ -29,7 +29,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -46,7 +45,6 @@ import com.example.dairemote_app.utils.BackspaceEditText
 import com.example.dairemote_app.utils.ConnectionMonitor
 import com.example.dairemote_app.utils.DisplayProfilesRecyclerAdapter
 import com.example.dairemote_app.utils.KeyboardToolbar
-import com.example.dairemote_app.utils.TutorialMediator
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import java.net.SocketException
 
@@ -167,12 +165,12 @@ class InteractionFragment : Fragment() {
             )
         displayRecyclerViewOptions.setAdapter(displayProfilesRecyclerAdapter)
 
-        val tutorial = TutorialMediator.GetInstance(AlertDialog.Builder(requireContext()))
-        if (tutorial != null) {
-            if (tutorial.tutorialOn) {
-                tutorial.showNextStep()
-            }
-        }
+        /*        val tutorial = TutorialMediator.GetInstance(AlertDialog.Builder(requireContext()))
+                if (tutorial != null) {
+                    if (tutorial.tutorialOn) {
+                        tutorial.showNextStep()
+                    }
+                }*/
 
         setupViews()
     }
@@ -190,9 +188,7 @@ class InteractionFragment : Fragment() {
 
     private fun setupConnectionMonitoring(delay: Int) {
         connectionMonitor = viewModel.connectionManager?.let { ConnectionMonitor.getInstance(it) }
-        if (!connectionMonitor?.isHeartbeatRunning()!!) {
-            connectionMonitor!!.startHeartbeat(delay)
-        }
+        connectionMonitor!!.startHeartbeat(delay)
     }
 
     private fun setupBackPressHandler() {
@@ -403,7 +399,7 @@ class InteractionFragment : Fragment() {
     }
 
     private fun setAudioDeviceDefault(defaultDevice: String) {
-        audioRecyclerAdapter.SetSelectedPosition(defaultDevice)
+        audioRecyclerAdapter.setSelectedPosition(defaultDevice)
     }
 
     private fun setupAudioControls() {
@@ -513,7 +509,8 @@ class InteractionFragment : Fragment() {
 
         editText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            ) {
                 if (!toolbar.getModifierToggled()) {
                     messageHost("KEYBOARD_WRITE {ENTER}")
                 }
@@ -665,36 +662,36 @@ class InteractionFragment : Fragment() {
         }
     }
 
-    private fun interactionTutorial() {
-        /*interactionHelp.setOnClickListener {
-            val builder = AlertDialog.Builder(this@InteractionPage)
-            val tutorial = TutorialMediator.GetInstance(builder)
-            if (interactionsHelpText.getVisibility() == View.VISIBLE) {
-                interactionsHelpText.setVisibility(View.GONE) // Hide the TextView
-            } else {
-                interactionsHelpText.setVisibility(View.VISIBLE) // Show the TextView
+    /*    private fun interactionTutorial() {
+            interactionHelp.setOnClickListener {
+                val builder = AlertDialog.Builder(this@InteractionPage)
+                val tutorial = TutorialMediator.GetInstance(builder)
+                if (interactionsHelpText.getVisibility() == View.VISIBLE) {
+                    interactionsHelpText.setVisibility(View.GONE) // Hide the TextView
+                } else {
+                    interactionsHelpText.setVisibility(View.VISIBLE) // Show the TextView
 
-                if (startTutorial.getVisibility() != View.VISIBLE) {
-                    startTutorial.setVisibility(View.VISIBLE) // Show clickable TextView for starting tutorial
-                    startTutorial.setOnClickListener(View.OnClickListener { // Hide after clicked
-                        startTutorial.setVisibility(View.GONE)
+                    if (startTutorial.getVisibility() != View.VISIBLE) {
+                        startTutorial.setVisibility(View.VISIBLE) // Show clickable TextView for starting tutorial
+                        startTutorial.setOnClickListener(View.OnClickListener { // Hide after clicked
+                            startTutorial.setVisibility(View.GONE)
 
-                        // Initiate tutorial starting at remote page steps
-                        tutorial.tutorialOn = true
-                        tutorial.currentStep = 0
-                        val intent = Intent(this@InteractionPage, ServersPage::class.java)
-                        startActivity(intent)
-                        tutorial.showNextStep()
-                    })
+                            // Initiate tutorial starting at remote page steps
+                            tutorial.tutorialOn = true
+                            tutorial.currentStep = 0
+                            val intent = Intent(this@InteractionPage, ServersPage::class.java)
+                            startActivity(intent)
+                            tutorial.showNextStep()
+                        })
+                    }
+
+                    // Cancel any existing hide callbacks
+                    handler.removeCallbacks(HideStartTutorial)
+                    // Hide the button automatically after a delay
+                    handler.postDelayed(HideStartTutorial, 2500)
                 }
-
-                // Cancel any existing hide callbacks
-                handler.removeCallbacks(HideStartTutorial)
-                // Hide the button automatically after a delay
-                handler.postDelayed(HideStartTutorial, 2500)
             }
         }*/
-    }
 
     private fun setupDisplayControls() {
         binding.displays.setOnClickListener {
@@ -750,9 +747,7 @@ class InteractionFragment : Fragment() {
         editText.clearFocus()
     }
 
-    // This is used in styles but does not count as a usage for some reason
-    // DO NOT DELETE
-    fun extraToolbarOnClick(view: View) {
+    private fun extraToolbarOnClick(view: View) {
         val viewID = view.id
         var msg = ""
         var audio = false
@@ -782,7 +777,7 @@ class InteractionFragment : Fragment() {
 
             // If this modifier was already active, deactivate all
             if (wasAlreadyActive) {
-                if(toolbar.getKeyCombination().isNotEmpty()) {
+                if (toolbar.getKeyCombination().isNotEmpty()) {
                     toolbar.addParentheses()
                     messageHost("KEYBOARD_WRITE ${toolbar.getKeyCombination()}")
                 }
@@ -805,12 +800,17 @@ class InteractionFragment : Fragment() {
         // Find which button was pressed
         for (i in 0..11) {
             val buttons =
-                if (toolbar.getCurrentToolbarPage() == 0) toolbar.getButtons(0) else toolbar.getButtons(1)
+                if (toolbar.getCurrentToolbarPage() == 0) toolbar.getButtons(0) else toolbar.getButtons(
+                    1
+                )
             if (viewID == buttons[i].id) {
                 if (toolbar.getCurrentToolbarPage() == 0 && (i == 6 || i == 7 || i == 8)) {
                     audio = true
                 }
-                msg = if (toolbar.getCurrentToolbarPage() == 0) toolbar.getKeys(0)[i] else toolbar.getKeys(1)[i]
+                msg =
+                    if (toolbar.getCurrentToolbarPage() == 0) toolbar.getKeys(0)[i] else toolbar.getKeys(
+                        1
+                    )[i]
                 break
             }
         }
@@ -843,17 +843,14 @@ class InteractionFragment : Fragment() {
     }
 
     override fun onPause() {
-        if (connectionMonitor?.isHeartbeatRunning() == true) {
-            connectionMonitor!!.shutDownHeartbeat()
-        }
+        connectionMonitor!!.shutDownHeartbeat()
         super.onPause()
     }
 
     override fun onResume() {
+//        viewModel.connectionManager?.connectToHost()
+        connectionMonitor!!.startHeartbeat()
         super.onResume()
-        if (!connectionMonitor?.isHeartbeatRunning()!!) {
-            connectionMonitor!!.startHeartbeat()
-        }
     }
 
     private fun hideAudioControlPanel() {
@@ -872,7 +869,7 @@ class InteractionFragment : Fragment() {
     }
 
     private fun cycleAudioDevice() {
-        audioRecyclerAdapter.CyclePosition()
+        audioRecyclerAdapter.cyclePosition()
     }
 
     private fun requestDisplayProfiles() {

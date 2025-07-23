@@ -8,7 +8,8 @@ import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputConnectionWrapper
 import androidx.appcompat.widget.AppCompatEditText
 
-class BackspaceEditText(context: Context, attrs: AttributeSet?) : AppCompatEditText(context, attrs) {
+class BackspaceEditText(context: Context, attrs: AttributeSet?) :
+    AppCompatEditText(context, attrs) {
 
     var onBackspacePressed: (() -> Unit)? = null
 

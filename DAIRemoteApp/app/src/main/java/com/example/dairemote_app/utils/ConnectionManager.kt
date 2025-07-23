@@ -107,13 +107,17 @@ class ConnectionManager(serverAddress: String) {
         throw lastException ?: IllegalStateException("No exception recorded")
     }
 
+    fun connectToHost() {
+        sendData("Connection requested by ${getDeviceName()}", getInetAddress())
+    }
+
     fun initializeConnection(): Boolean {
         return runWithRetry(MAX_RETRIES) { attempt ->
             try {
                 val socketTimeout = SOCKET_TIMEOUT_MS * (attempt + 1)
                 getUDPSocket().soTimeout = socketTimeout.toInt()
 
-                sendData("Connection requested by ${getDeviceName()}", getInetAddress())
+                connectToHost()
                 waitForResponse(socketTimeout.toInt())
 
                 return@runWithRetry when (getServerResponse()?.lowercase()) {
@@ -127,16 +131,19 @@ class ConnectionManager(serverAddress: String) {
                         }
                         return approved
                     }
+
                     "approved" -> {
                         shutdownHostSearchInBackground()
                         ConnectionMonitor.getInstance(this)
                         setConnectionEstablished(true)
                         true
                     }
+
                     "declined" -> {
                         resetConnectionManager()
                         false
                     }
+
                     else -> throw IOException("Invalid server response ${getServerResponse()}")
                 }
             } catch (e: Exception) {
@@ -221,13 +228,13 @@ class ConnectionManager(serverAddress: String) {
         return true
     }
 
-/*    fun requestHostName(): Boolean {
-        if (hostRequester("HostName", "HOST Name", getInetAddress())) {
-            setHostName(getHostRequesterResponse())
-            return true
-        }
-        return false
-    }*/
+    /*    fun requestHostName(): Boolean {
+            if (hostRequester("HostName", "HOST Name", getInetAddress())) {
+                setHostName(getHostRequesterResponse())
+                return true
+            }
+            return false
+        }*/
 
     // Retrieve audio devices from host
     fun requestHostAudioDevices(): Boolean {

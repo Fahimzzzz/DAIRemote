@@ -17,7 +17,8 @@ class MdnsHostDiscovery(private val context: Context) {
     fun startDiscovery(callback: (List<String>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                val wifiManager =
+                    context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
                 val lock = wifiManager.createMulticastLock("mDNSLock")
                 lock.acquire()
 

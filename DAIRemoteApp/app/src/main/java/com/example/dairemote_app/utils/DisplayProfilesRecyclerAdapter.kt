@@ -13,7 +13,8 @@ class DisplayProfilesRecyclerAdapter(
     private val connectionManager: ConnectionManager
 ) : RecyclerView.Adapter<DisplayProfilesRecyclerAdapter.OptionViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.audio_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.interaction_list_item, parent, false)
         return OptionViewHolder(view)
     }
 

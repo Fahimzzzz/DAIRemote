@@ -8,11 +8,11 @@ import com.example.dairemote_app.R
 
 class KeyboardToolbar internal constructor(
     var moreOpts: View,
-    var modifier1: View,
-    var modifier2: View,
-    var modifier3: View,
-    var modifier4: View,
-    var modifier5: View,
+    private var modifier1: View,
+    private var modifier2: View,
+    private var modifier3: View,
+    private var modifier4: View,
+    private var modifier5: View,
     private val keyboardTextInputView: TextView,
     private val keyboardToolbar: Toolbar,
     private val keyboardExtraBtnsLayout: GridLayout,
@@ -65,7 +65,7 @@ class KeyboardToolbar internal constructor(
         return this.keyboardToolbar
     }
 
-    fun getKeyboardLayout(): GridLayout {
+    private fun getKeyboardLayout(): GridLayout {
         return this.keyboardExtraBtnsLayout
     }
 
@@ -112,7 +112,7 @@ class KeyboardToolbar internal constructor(
         return this.keyCombination
     }
 
-    fun appendKeyCombination(character: String?) {
+    private fun appendKeyCombination(character: String?) {
         keyCombination.append(character)
     }
 

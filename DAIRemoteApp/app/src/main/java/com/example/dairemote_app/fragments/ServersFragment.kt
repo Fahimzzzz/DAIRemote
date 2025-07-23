@@ -61,8 +61,8 @@ class ServersFragment : Fragment() {
         // Create a custom adapter to show stars for saved hosts
         adapter = object : ArrayAdapter<String>(
             requireContext(),
-            R.layout.list_item_host,  // You'll need to create this layout
-            R.id.host_text_view,     // ID of TextView in your custom layout
+            R.layout.list_item_host,
+            R.id.host_text_view,
             availableHosts
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

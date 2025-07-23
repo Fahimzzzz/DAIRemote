@@ -66,12 +66,12 @@ class MainFragment : Fragment() {
             }
         }
 
-        binding.helpButton.setOnClickListener {
-            tutorial?.let {
-                it.setCurrentStep(0)
-                it.showSteps(it.getCurrentStep())
-            }
-        }
+        /*        binding.helpButton.setOnClickListener {
+                    tutorial?.let {
+                        it.setCurrentStep(0)
+                        it.showSteps(it.getCurrentStep())
+                    }
+                }*/
     }
 
     private fun animateConnectionButton(view: View) {
@@ -103,10 +103,12 @@ class MainFragment : Fragment() {
             hosts.isEmpty() -> {
                 notifyUser("No hosts found")
             }
+
             hosts.size == 1 -> {
                 // Only one host available - connect automatically
                 connectToHost(hosts[0])
             }
+
             else -> {
                 // Multiple hosts available - check for previous connection
                 val lastConnectedHost = sharedPrefsHelper.getLastConnectedHost()

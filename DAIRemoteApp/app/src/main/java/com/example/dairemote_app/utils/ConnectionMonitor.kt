@@ -122,7 +122,11 @@ class ConnectionMonitor(manager: ConnectionManager) {
                 {
                     try {
                         getHeartbeatSocket().sendData("DroidHeartBeat")
-                        setHeartbeatResponse(getHeartbeatSocket().waitForResponse(HEARTBEAT_TIMEOUT_MS))
+                        setHeartbeatResponse(
+                            getHeartbeatSocket().waitForResponse(
+                                HEARTBEAT_TIMEOUT_MS
+                            )
+                        )
 
                         if (getHeartbeatResponse().equals("HeartBeat Ack", ignoreCase = true)) {
                             return@supplyAsync true
@@ -158,11 +162,13 @@ class ConnectionMonitor(manager: ConnectionManager) {
     }
 
     fun shutDownHeartbeat() {
-        stopHeartbeat()
-        if (!heartbeatExecutorService.isShutdown) {
-            heartbeatExecutorService.shutdownNow()
+        if (getServiceRunning()) {
+            stopHeartbeat()
+            if (!heartbeatExecutorService.isShutdown) {
+                heartbeatExecutorService.shutdownNow()
+            }
+            getHeartbeatSocket().closeSocket()
         }
-        getHeartbeatSocket().closeSocket()
     }
 
     companion object {

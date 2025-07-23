@@ -40,7 +40,7 @@ internal class TutorialMediatorTest {
     @get:Test
     val builder: Unit
         get() {
-            val result = tutorialMediator!!.GetBuilder()
+            val result = tutorialMediator!!.getBuilder()
             Assertions.assertNotNull(result)
             Assertions.assertSame(mockBuilder, result)
         }

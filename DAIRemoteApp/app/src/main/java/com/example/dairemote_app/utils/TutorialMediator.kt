@@ -24,11 +24,11 @@ class TutorialMediator : IBuilderTemplate {
         return this.currentStep
     }
 
-    fun GetBuilder(): AlertDialog.Builder? {
+    fun getBuilder(): AlertDialog.Builder? {
         return builder
     }
 
-    fun GetWindow(): Window? {
+    private fun getWindow(): Window? {
         return window
     }
 
@@ -74,7 +74,7 @@ class TutorialMediator : IBuilderTemplate {
         window.attributes = params
     }
 
-    fun builderStartBtn(builder: AlertDialog.Builder?) {
+    private fun builderStartBtn(builder: AlertDialog.Builder?) {
         builder!!.setPositiveButton("Start Tutorial") { dialog: DialogInterface?, which: Int ->
             tutorialOn = true
             showNextStep()
@@ -88,15 +88,15 @@ class TutorialMediator : IBuilderTemplate {
         return currentStep == 0 || currentStep == 1 || currentStep == 2 || currentStep == 5 || currentStep == 6
     }
 
-    fun ShowStartStep(title: String, message: String, negative: String, gravity: Int) {
+    private fun showStartStep(title: String, message: String, negative: String, gravity: Int) {
         builderTitleMsg(builder!!, title, message)
         builderStartBtn(builder)
         builderNegativeBtn(builder!!, negative)
         builderShow(builder!!)
-        BuilderWindowPosition(GetWindow()!!, gravity, 50, 200)
+        BuilderWindowPosition(getWindow()!!, gravity, 50, 200)
     }
 
-    fun ShowCurrentStep(
+    private fun showCurrentStep(
         title: String,
         message: String,
         positive: String,
@@ -107,59 +107,59 @@ class TutorialMediator : IBuilderTemplate {
         builderPositiveBtn(builder!!, positive)
         builderNegativeBtn(builder!!, negative)
         builderShow(builder!!)
-        BuilderWindowPosition(GetWindow()!!, gravity, 50, 200)
+        BuilderWindowPosition(getWindow()!!, gravity, 50, 200)
     }
 
-    fun showNextStep() {
+    private fun showNextStep() {
         currentStep = currentStep + 1
         showSteps(currentStep)
     }
 
-    fun showSteps(step: Int) {
+    private fun showSteps(step: Int) {
         when (step) {
-            0 -> ShowStartStep(
+            0 -> showStartStep(
                 "Interactive Tutorial",
                 "Start the tutorial?",
                 "Exit", Gravity.TOP or Gravity.START
             )
 
-            1 -> ShowCurrentStep(
+            1 -> showCurrentStep(
                 "Servers Page",
                 "A list of all available nearby hosts. If not already connected, select a host from the list and you will be redirected to the Remote Page.",
                 "Next", "Exit", Gravity.BOTTOM or Gravity.START
             )
 
-            2 -> ShowCurrentStep(
+            2 -> showCurrentStep(
                 "+ Add Server Button",
                 "Tap the + button to manually add a server host to connect to.",
                 "Next", "Exit", Gravity.TOP or Gravity.START
             )
 
-            3 -> ShowCurrentStep(
+            3 -> showCurrentStep(
                 "Checking for Hosts",
                 "If there are no available hosts in the list, you will have to add a server host manually. Otherwise, the tutorial cannot be continued without an available host.",
                 "Next", "Exit", Gravity.BOTTOM or Gravity.START
             )
 
-            4 -> ShowCurrentStep(
+            4 -> showCurrentStep(
                 "Main Page",
                 "Tap on the center icon to connect to your local host. Ensure the desktop application is open.",
                 "Next", "Exit", Gravity.TOP or Gravity.START
             )
 
-            5 -> ShowCurrentStep(
+            5 -> showCurrentStep(
                 "Remote Page",
                 "If you ever need a refresher, click the help icon above to start the tutorial.",
                 "Next", "Exit", Gravity.TOP or Gravity.START
             )
 
-            6 -> ShowCurrentStep(
+            6 -> showCurrentStep(
                 "Lower Panel Buttons",
                 "Display Modes, Audio Cycling, Hotkeys, App Keyboard.",
                 "Next", "Exit", Gravity.BOTTOM or Gravity.START
             )
 
-            7 -> ShowCurrentStep(
+            7 -> showCurrentStep(
                 "ToolBar",
                 "Click on the ToolBar button to navigate between pages.",
                 "", "Finish", Gravity.TOP or Gravity.START
