@@ -100,14 +100,12 @@ class InteractionFragment : Fragment() {
     private fun connectionLossHandler(message: String?) {
         cleanUp()
 
-//        viewModel.updateConnectionState(false)
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         findNavController().navigate(R.id.action_to_main)
     }
 
     fun messageHost(message: String) {
-        if (!viewModel.connectionManager?.sendHostMessage(message)!!) {
-            viewModel.updateConnectionState(false)
+        if (!viewModel.messageHost(message)) {
             connectionLossHandler("Connection lost")
         }
     }
@@ -723,11 +721,25 @@ class InteractionFragment : Fragment() {
         }
     }
 
+    private fun releaseVibrator() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager?)?.defaultVibrator?.cancel()
+        } else {
+            @Suppress("DEPRECATION")
+            (requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?)?.cancel()
+        }
+    }
+
     private fun cleanUp() {
         keyboardLayoutListener?.let {
             binding.root.viewTreeObserver.removeOnGlobalLayoutListener(it)
         }
         keyboardLayoutListener = null
+
+        releaseVibrator()
+
+        viewModel.audioState.removeObservers(viewLifecycleOwner)
+        viewModel.displayProfiles.removeObservers(viewLifecycleOwner)
 
         connectionMonitor?.shutDownHeartbeat()
         handler.removeCallbacksAndMessages(null)
@@ -843,14 +855,18 @@ class InteractionFragment : Fragment() {
     }
 
     override fun onPause() {
-        connectionMonitor!!.shutDownHeartbeat()
         super.onPause()
+        connectionMonitor!!.shutDownHeartbeat()
     }
 
-    override fun onResume() {
-//        viewModel.connectionManager?.connectToHost()
+    override fun onStart() {
+        super.onStart()
         setupConnectionMonitoring(5000)
-        super.onResume()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        connectionMonitor?.shutDownHeartbeat()
     }
 
     private fun hideAudioControlPanel() {
