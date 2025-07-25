@@ -475,7 +475,7 @@
             android:layout_column="0"
             android:background="@drawable/light_ripple"
             android:contentDescription="@string/disconnect_from_host"
-            android:src="@drawable/udpmsg_icon" />
+            android:src="@drawable/server_disconnect" />
 
         <ImageButton
             android:id="@+id/audiocycle"

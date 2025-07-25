@@ -8,7 +8,7 @@
         <item
             android:id="@+id/nav_remote"
             android:title="@string/remote"
-            android:icon="@drawable/mouse_icon"/>
+            android:icon="@drawable/interaction_icon"/>
         <item
             android:id="@+id/nav_server"
             android:title="@string/server"
