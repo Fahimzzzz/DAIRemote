@@ -21,6 +21,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DAIRemoteApplicationUI));
             this.BtnSaveDisplayConfig = new Button();
             this.checkBoxStartup = new CheckBox();
             this.BtnCycleAudioOutputs = new Button();
@@ -168,7 +169,10 @@
             this.Controls.Add(this.BtnCycleAudioOutputs);
             this.Controls.Add(this.checkBoxStartup);
             this.Controls.Add(this.BtnSaveDisplayConfig);
+            this.MaximizeBox = false;
             this.Name = "DAIRemoteApplicationUI";
+            this.ShowInTaskbar = false;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "DAIRemote";
             Resize += this.DAIRemoteApplicationUI_Resize;
             ((System.ComponentModel.ISupportInitialize)this.DAIRemoteLogo).EndInit();

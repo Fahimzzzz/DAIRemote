@@ -135,8 +135,6 @@ class ServersFragment : Fragment() {
                     // Highlight the saved host if it exists in the list
                     val savedHost = sharedPrefsHelper.getLastConnectedHost()
                     if (savedHost != null && result.hosts.contains(savedHost)) {
-                        // You might want to add visual indication here
-                        // For example, move it to the top of the list
                         availableHosts.remove(savedHost)
                         availableHosts.add(0, savedHost)
                     }

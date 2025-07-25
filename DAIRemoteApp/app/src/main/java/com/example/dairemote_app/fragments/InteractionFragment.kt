@@ -97,21 +97,18 @@ class InteractionFragment : Fragment() {
     private val mouseSensitivity = 1f
     private var initialPointerCount = 0
 
-    private fun startHome(message: String?) {
-        // Remove listener before navigating away
-        keyboardLayoutListener?.let {
-            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(it)
-        }
-        keyboardLayoutListener = null
+    private fun connectionLossHandler(message: String?) {
+        cleanUp()
 
-        viewModel.updateConnectionState(false)
+//        viewModel.updateConnectionState(false)
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         findNavController().navigate(R.id.action_to_main)
     }
 
     fun messageHost(message: String) {
         if (!viewModel.connectionManager?.sendHostMessage(message)!!) {
-            startHome("Connection lost")
+            viewModel.updateConnectionState(false)
+            connectionLossHandler("Connection lost")
         }
     }
 
@@ -176,7 +173,6 @@ class InteractionFragment : Fragment() {
     }
 
     private fun setupViews() {
-        setupConnectionMonitoring(5000)
         setupTouchControls()
         setupKeyboard()
         setupBackPressHandler()
@@ -364,7 +360,7 @@ class InteractionFragment : Fragment() {
                 if (it.error != null) {
                     Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
                     if (it.error == "Connection lost") {
-                        startHome("Connection lost")
+                        connectionLossHandler("Connection lost")
                     }
                     return@observe
                 }
@@ -419,7 +415,7 @@ class InteractionFragment : Fragment() {
                         hideAudioControlPanel()
                     }
                 } else {
-                    startHome("Connection lost")
+                    connectionLossHandler("Connection lost")
                 }
             }
         }
@@ -621,7 +617,7 @@ class InteractionFragment : Fragment() {
                     requestFocus()
                 }
             } else {
-                startHome("Connection lost")
+                connectionLossHandler("Connection lost")
             }
         }
 
@@ -656,9 +652,9 @@ class InteractionFragment : Fragment() {
         binding.disconnectHost.setOnClickListener {
             if (viewModel.connectionManager?.getConnectionEstablished() == true) {
                 viewModel.connectionManager?.shutdown()
-                viewModel.updateConnectionState(false)
-                startHome("Disconnected from host")
             }
+            viewModel.updateConnectionState(false)
+            connectionLossHandler("Disconnected from host")
         }
     }
 
@@ -717,7 +713,7 @@ class InteractionFragment : Fragment() {
 
                 is com.example.dairemote_app.viewmodels.Result.Error -> {
                     if (result.message == "Connection lost") {
-                        startHome(result.message)
+                        connectionLossHandler(result.message)
                     } else {
                         Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                         updateDisplayProfiles(listOf("Failed to load profiles"))
@@ -727,17 +723,21 @@ class InteractionFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        // Remove the listener when the view is destroyed
+    private fun cleanUp() {
         keyboardLayoutListener?.let {
             binding.root.viewTreeObserver.removeOnGlobalLayoutListener(it)
         }
         keyboardLayoutListener = null
 
-        super.onDestroyView()
         connectionMonitor?.shutDownHeartbeat()
         handler.removeCallbacksAndMessages(null)
         _binding = null
+    }
+
+    override fun onDestroyView() {
+        cleanUp()
+
+        super.onDestroyView()
     }
 
     private fun clearEditText() {
@@ -849,7 +849,7 @@ class InteractionFragment : Fragment() {
 
     override fun onResume() {
 //        viewModel.connectionManager?.connectToHost()
-        connectionMonitor!!.startHeartbeat()
+        setupConnectionMonitoring(5000)
         super.onResume()
     }
 

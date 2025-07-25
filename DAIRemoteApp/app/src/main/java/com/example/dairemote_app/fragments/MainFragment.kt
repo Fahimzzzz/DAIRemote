@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.dairemote_app.R
+import com.example.dairemote_app.databinding.ActivityMainBinding
 import com.example.dairemote_app.databinding.FragmentMainBinding
 import com.example.dairemote_app.utils.ConnectionManager
 import com.example.dairemote_app.utils.SharedPrefsHelper
@@ -140,6 +141,7 @@ class MainFragment : Fragment() {
                     if (connectionResult == true) {
                         notifyUser("Connection approved")
                         if (isAdded && !isDetached) {
+//                            ActivityMainBinding.inflate(layoutInflater).HostName.text = "ZZZ"
                             findNavController().navigate(R.id.action_to_interaction)
                         }
                     } else {

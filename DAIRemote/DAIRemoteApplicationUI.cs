@@ -42,6 +42,9 @@ public partial class DAIRemoteApplicationUI : Form
         // Listen for display profile changes
         DisplayProfileWatcher.Initialize(DisplayConfig.GetDisplayProfilesDirectory());
         DisplayProfileWatcher.ProfileChanged += OnProfilesChanged;
+
+        // Hide the form initially
+        this.Hide();
     }
 
     protected override void OnHandleCreated(EventArgs e)

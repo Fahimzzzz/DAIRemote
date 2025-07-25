@@ -19,7 +19,6 @@ class ConnectionMonitor(manager: ConnectionManager) {
 
     init {
         setConnectionManager(manager)
-        initHeartbeat()
     }
 
     private fun setConnectionManager(manager: ConnectionManager) {
@@ -69,10 +68,6 @@ class ConnectionMonitor(manager: ConnectionManager) {
     private fun initHeartbeat() {
         handler = Handler(Looper.getMainLooper())
         heartbeatExecutorService = Executors.newCachedThreadPool()
-    }
-
-    fun isHeartbeatRunning(): Boolean {
-        return getServiceRunning()
     }
 
     private fun setServiceRunning(serviceRunning: Boolean) {
