@@ -1,7 +1,6 @@
 ﻿using AudioSwitcher.AudioApi;
 using AudioSwitcher.AudioApi.CoreAudio;
 using AudioSwitcher.AudioApi.Observables;
-using System.Diagnostics;
 
 namespace AudioManager;
 
@@ -123,11 +122,6 @@ public class AudioDeviceManager
             {
                 SetDefaultAudioDevice(matchedDevice);
             }
-        }
-        else
-        {
-            //throw new ArgumentException($"No device found with the name '{deviceFullName}'");
-            Debug.WriteLine($"No device found with the name '{deviceFullName}'");
         }
     }
 

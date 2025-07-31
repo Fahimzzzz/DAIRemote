@@ -20,7 +20,6 @@ class InstructionsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_instructions)
 
         viewModel = ViewModelProvider(requireActivity()).get(ConnectionViewModel::class.java)
     }

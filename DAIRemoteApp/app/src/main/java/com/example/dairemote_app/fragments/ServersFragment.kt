@@ -18,9 +18,15 @@ import androidx.navigation.fragment.findNavController
 import com.example.dairemote_app.R
 import com.example.dairemote_app.databinding.FragmentServersBinding
 import com.example.dairemote_app.utils.ConnectionManager
+import com.example.dairemote_app.utils.MdnsHostDiscovery
 import com.example.dairemote_app.utils.SharedPrefsHelper
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -34,6 +40,8 @@ class ServersFragment : Fragment() {
     private lateinit var executor: ExecutorService
     private lateinit var viewModel: ConnectionViewModel
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
+    private var mdns: MdnsHostDiscovery? = null
+    private var scope: CoroutineScope? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -132,27 +140,73 @@ class ServersFragment : Fragment() {
                     availableHosts.clear()
                     availableHosts.addAll(result.hosts)
 
-                    // Highlight the saved host if it exists in the list
-                    val savedHost = sharedPrefsHelper.getLastConnectedHost()
-                    if (savedHost != null && result.hosts.contains(savedHost)) {
-                        availableHosts.remove(savedHost)
-                        availableHosts.add(0, savedHost)
+                    if(availableHosts.isEmpty()) {
+                        scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+                        mdns = MdnsHostDiscovery(requireContext())
+                        scope!!.launch {
+                            withContext(Dispatchers.IO) {
+                                // Run discovery off the main thread
+                                mdns?.startDiscovery { discoveredHosts ->
+                                    // Back on main thread to update UI
+                                    scope!!.launch {
+                                        withContext(Dispatchers.Main) {
+                                            availableHosts.addAll(discoveredHosts)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     requireActivity().runOnUiThread {
-                        adapter.notifyDataSetChanged()
-                        binding.swipeRefreshLayout.isRefreshing = false
+                        processAndDisplayHosts()
                     }
                 }
 
                 is ConnectionViewModel.HostSearchResult.Error -> {
-                    requireActivity().runOnUiThread {
-                        notifyUser(result.message)
-                        binding.swipeRefreshLayout.isRefreshing = false
+                    startMdnsFallback()
+                }
+            }
+        }
+    }
+
+    private fun startMdnsFallback() {
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val mdns = MdnsHostDiscovery(requireContext())
+
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                // Run discovery off the main thread
+                mdns.startDiscovery { discoveredHosts ->
+                    // Back on main thread to update UI
+                    scope.launch {
+                        withContext(Dispatchers.Main) {
+                            if(discoveredHosts.isEmpty()) {
+                                notifyUser("No hosts found")
+                                binding.swipeRefreshLayout.isRefreshing = false
+                            } else {
+                                availableHosts.clear()
+                                availableHosts.addAll(discoveredHosts)
+                                processAndDisplayHosts()
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun processAndDisplayHosts() {
+        // Highlight saved host if it exists
+        sharedPrefsHelper.getLastConnectedHost()?.let { savedHost ->
+            if (availableHosts.contains(savedHost)) {
+                availableHosts.remove(savedHost)
+                availableHosts.add(0, savedHost)
+            }
+        }
+
+        adapter.notifyDataSetChanged()
+        binding.swipeRefreshLayout.isRefreshing = false
     }
 
     private fun showAddServerDialog() {
@@ -206,7 +260,7 @@ class ServersFragment : Fragment() {
         binding.connectionLoading.visibility = View.VISIBLE
 
         if (!priorConnectionEstablishedCheck(server)) {
-            viewModel.connectionManager = ConnectionManager(server)
+            viewModel.connectionManager = ConnectionManager(server, viewModel)
             val manager = viewModel.connectionManager ?: run {
                 binding.connectionLoading.visibility = View.GONE
                 notifyUser("Connection manager initialization failed")

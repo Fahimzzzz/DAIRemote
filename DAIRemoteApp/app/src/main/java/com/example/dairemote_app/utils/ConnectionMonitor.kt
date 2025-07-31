@@ -2,16 +2,18 @@ package com.example.dairemote_app.utils
 
 import android.os.Handler
 import android.os.Looper
+import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 private const val HEARTBEAT_INTERVAL_MS = 2000L
-private const val HEARTBEAT_TIMEOUT_MS: Int = 3000
+private const val HEARTBEAT_TIMEOUT_MS: Int = 250
 private const val MAX_MISSED_HEARTBEATS = 3
 
-class ConnectionMonitor(manager: ConnectionManager) {
+class ConnectionMonitor(manager: ConnectionManager, private val viewModel: ConnectionViewModel) {
     private lateinit var connectionManager: ConnectionManager
+    private var connectionView: ConnectionViewModel
     private lateinit var handler: Handler
     private var serviceRunning = false
     private lateinit var heartbeatSocket: SocketManager
@@ -19,6 +21,7 @@ class ConnectionMonitor(manager: ConnectionManager) {
 
     init {
         setConnectionManager(manager)
+        connectionView = viewModel
     }
 
     private fun setConnectionManager(manager: ConnectionManager) {
@@ -50,7 +53,7 @@ class ConnectionMonitor(manager: ConnectionManager) {
                     if (missedHeartbeats >= MAX_MISSED_HEARTBEATS) {
                         handleConnectionLoss()
                     } else {
-                        handler.postDelayed(this, HEARTBEAT_INTERVAL_MS / 2)
+                        handler.postDelayed(this, 250)
                     }
                 }
             } catch (e: Exception) {
@@ -60,9 +63,10 @@ class ConnectionMonitor(manager: ConnectionManager) {
     }
 
     private fun handleConnectionLoss() {
-        setServiceRunning(false)
-        connectionManager.setConnectionEstablished(false)
-        // Notify view model or UI about connection loss
+        viewModel.updateConnectionState(false)
+        shutDownHeartbeat()
+        getConnectionManager().resetConnectionManager()
+        getConnectionManager().closeUDPSocket()
     }
 
     private fun initHeartbeat() {
@@ -76,20 +80,6 @@ class ConnectionMonitor(manager: ConnectionManager) {
 
     private fun getServiceRunning(): Boolean {
         return this.serviceRunning
-    }
-
-    fun startHeartbeat() {
-        if (!getServiceRunning()) {
-            setHeartbeatSocket(
-                SocketManager(
-                    ConnectionManager.getInetAddress(),
-                    ConnectionManager.getPort()
-                )
-            )
-            initHeartbeat()
-            handler.post(heartbeatService)
-            setServiceRunning(true)
-        }
     }
 
     fun startHeartbeat(delay: Int) {
@@ -111,41 +101,38 @@ class ConnectionMonitor(manager: ConnectionManager) {
             return false
         }
 
-        // Retry heartbeat 5 times
-        for (attempt in 0..1) {
-            val future = CompletableFuture.supplyAsync(
-                {
-                    try {
-                        getHeartbeatSocket().sendData("DroidHeartBeat")
-                        setHeartbeatResponse(
-                            getHeartbeatSocket().waitForResponse(
-                                HEARTBEAT_TIMEOUT_MS
-                            )
+        val future = CompletableFuture.supplyAsync(
+            {
+                try {
+                    getHeartbeatSocket().sendData("DroidHeartBeat")
+                    setHeartbeatResponse(
+                        getHeartbeatSocket().waitForResponse(
+                            HEARTBEAT_TIMEOUT_MS
                         )
+                    )
 
-                        if (getHeartbeatResponse().equals("HeartBeat Ack", ignoreCase = true)) {
-                            return@supplyAsync true
-                        }
-                    } catch (ignored: Exception) {
+                    if (getHeartbeatResponse().equals("HeartBeat Ack", ignoreCase = true)) {
+                        return@supplyAsync true
                     }
-                    false
-                }, heartbeatExecutorService
-            )
-
-            try {
-                val result = future.get()
-                if (result) {
-                    return true
+                } catch (ignored: Exception) {
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+                false
+            }, heartbeatExecutorService
+        )
 
-            try {
-                Thread.sleep(125)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
+        try {
+            val result = future.get()
+            if (result) {
+                return true
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            Thread.sleep(125)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
 
         return false
@@ -171,9 +158,9 @@ class ConnectionMonitor(manager: ConnectionManager) {
         private lateinit var heartbeatExecutorService: ExecutorService
         private var heartbeatResponse: String? = null
 
-        fun getInstance(manager: ConnectionManager): ConnectionMonitor? {
+        fun getInstance(manager: ConnectionManager, viewModel: ConnectionViewModel): ConnectionMonitor? {
             if (connectionMonitorInstance == null) {
-                connectionMonitorInstance = ConnectionMonitor(manager)
+                connectionMonitorInstance = ConnectionMonitor(manager, viewModel)
             }
             return connectionMonitorInstance
         }

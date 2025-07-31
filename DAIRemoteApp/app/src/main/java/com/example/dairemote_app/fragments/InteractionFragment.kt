@@ -115,7 +115,7 @@ class InteractionFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[ConnectionViewModel::class.java]
 
         viewModel.connectionManager.let {
-            connectionMonitor = it?.let { it1 -> ConnectionMonitor.getInstance(it1) }
+            connectionMonitor = it?.let { it1 -> ConnectionMonitor.getInstance(it1, viewModel) }
         }
     }
 
@@ -178,10 +178,16 @@ class InteractionFragment : Fragment() {
         setupAudioObservers()
         setupDisplayControls()
         setupManualDisconnect()
+
+        viewModel.connectionState.observe(viewLifecycleOwner) { isConnected ->
+            if (!isConnected) {
+                connectionLossHandler("Connection lost")
+            }
+        }
     }
 
     private fun setupConnectionMonitoring(delay: Int) {
-        connectionMonitor = viewModel.connectionManager?.let { ConnectionMonitor.getInstance(it) }
+        connectionMonitor = viewModel.connectionManager?.let { ConnectionMonitor.getInstance(it, viewModel) }
         connectionMonitor!!.startHeartbeat(delay)
     }
 
@@ -399,22 +405,16 @@ class InteractionFragment : Fragment() {
     private fun setupAudioControls() {
         // Initialize views using view binding
         binding.audiocycle.setOnClickListener {
-            viewModel.connectionManager?.getConnectionEstablished().let { isConnected ->
-                if (isConnected == true) {
-                    if (audioControlPanel.visibility == View.GONE) {
-                        hideDisplayProfilesList()
-                        audioControlPanel.visibility = View.VISIBLE
-                        try {
-                            requestAudioDevices()
-                        } catch (e: SocketException) {
-                            throw RuntimeException(e)
-                        }
-                    } else {
-                        hideAudioControlPanel()
-                    }
-                } else {
-                    connectionLossHandler("Connection lost")
+            if (audioControlPanel.visibility == View.GONE) {
+                hideDisplayProfilesList()
+                audioControlPanel.visibility = View.VISIBLE
+                try {
+                    requestAudioDevices()
+                } catch (e: SocketException) {
+                    throw RuntimeException(e)
                 }
+            } else {
+                hideAudioControlPanel()
             }
         }
 
@@ -605,17 +605,13 @@ class InteractionFragment : Fragment() {
 
         // 2. Keyboard button click handler
         binding.keyboardImgBtn.setOnClickListener {
-            if (viewModel.connectionManager?.getConnectionEstablished() == true) {
-                hideAudioControlPanel()
-                hideDisplayProfilesList()
+            hideAudioControlPanel()
+            hideDisplayProfilesList()
 
-                editText.run {
-                    visibility = View.VISIBLE
-                    isCursorVisible = false
-                    requestFocus()
-                }
-            } else {
-                connectionLossHandler("Connection lost")
+            editText.run {
+                visibility = View.VISIBLE
+                isCursorVisible = false
+                requestFocus()
             }
         }
 
@@ -651,7 +647,6 @@ class InteractionFragment : Fragment() {
             if (viewModel.connectionManager?.getConnectionEstablished() == true) {
                 viewModel.connectionManager?.shutdown()
             }
-            viewModel.updateConnectionState(false)
             connectionLossHandler("Disconnected from host")
         }
     }
@@ -740,6 +735,9 @@ class InteractionFragment : Fragment() {
 
         viewModel.audioState.removeObservers(viewLifecycleOwner)
         viewModel.displayProfiles.removeObservers(viewLifecycleOwner)
+        viewModel.connectionState.removeObservers(viewLifecycleOwner)
+        viewModel.updateConnectionState(false)
+        viewModel.connectionManager?.setConnectionEstablished(false)
 
         connectionMonitor?.shutDownHeartbeat()
         handler.removeCallbacksAndMessages(null)
@@ -852,11 +850,6 @@ class InteractionFragment : Fragment() {
         toolbar.resetKeyboardModifiers()
         updateModifierButtonColors()
         editText.setText("")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        connectionMonitor!!.shutDownHeartbeat()
     }
 
     override fun onStart() {

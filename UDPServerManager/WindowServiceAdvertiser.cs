@@ -30,8 +30,6 @@ public class WindowsServiceAdvertiser : IDisposable
 
         mdns.Start(); // Starts on background thread
         serviceDiscovery.Advertise(serviceProfile);
-
-        //Debug.WriteLine($"Started advertising '{serviceName}' on port {port}");
     }
 
     public void StopAdvertising()

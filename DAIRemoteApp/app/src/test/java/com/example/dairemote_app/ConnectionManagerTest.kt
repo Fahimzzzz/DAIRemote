@@ -1,14 +1,14 @@
 package com.example.dairemote_app
 
 import com.example.dairemote_app.utils.ConnectionManager
-import org.junit.jupiter.api.AfterAll
+import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class ConnectionManagerTest {
     private lateinit var connectionManager: ConnectionManager
+    private lateinit var viewModel: ConnectionViewModel
 
     @Test
     fun test_getHostAddress_Initialization() {
@@ -51,7 +51,7 @@ internal class ConnectionManagerTest {
 
     @BeforeEach
     fun setup(): Unit {
-        connectionManager = ConnectionManager("192.168.1.1")
+        connectionManager = ConnectionManager("192.168.1.1", null)
     }
 
     @BeforeEach

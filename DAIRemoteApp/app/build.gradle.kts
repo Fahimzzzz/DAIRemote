@@ -57,15 +57,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     testImplementation(libs.mockito.core)
-    // Navigation Component
     implementation (libs.navigation.fragment.ktx)
     implementation (libs.navigation.ui.ktx)
-
-    // ViewModel + LiveData (for sharing data between Fragments)
     implementation (libs.lifecycle.viewmodel.ktx)
     implementation (libs.lifecycle.livedata.ktx)
-
-    // Optional: Material Components for better UI
     implementation (libs.material)
 
     implementation (libs.jmdns)

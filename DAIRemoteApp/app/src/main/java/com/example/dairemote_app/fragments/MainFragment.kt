@@ -14,14 +14,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.dairemote_app.R
-import com.example.dairemote_app.databinding.ActivityMainBinding
 import com.example.dairemote_app.databinding.FragmentMainBinding
 import com.example.dairemote_app.utils.ConnectionManager
+import com.example.dairemote_app.utils.MdnsHostDiscovery
 import com.example.dairemote_app.utils.SharedPrefsHelper
 import com.example.dairemote_app.utils.TutorialMediator
 import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -30,6 +31,8 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ConnectionViewModel by activityViewModels()
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
+    private var mdns: MdnsHostDiscovery? = null
+    private var scope: CoroutineScope? = null
     private val tutorial by lazy {
         TutorialMediator.GetInstance(AlertDialog.Builder(requireContext()))
     }
@@ -66,13 +69,6 @@ class MainFragment : Fragment() {
                 findNavController().navigate(R.id.action_to_interaction)
             }
         }
-
-        /*        binding.helpButton.setOnClickListener {
-                    tutorial?.let {
-                        it.setCurrentStep(0)
-                        it.showSteps(it.getCurrentStep())
-                    }
-                }*/
     }
 
     private fun animateConnectionButton(view: View) {
@@ -85,26 +81,38 @@ class MainFragment : Fragment() {
     private fun attemptConnection() {
         binding.connectionLoading.visibility = View.VISIBLE
         viewModel.searchForHosts().observe(viewLifecycleOwner) { result ->
-            binding.connectionLoading.visibility = View.GONE
 
             when (result) {
                 is ConnectionViewModel.HostSearchResult.Success -> {
-                    handleHostSearchSuccess(result.hosts)
+                    binding.connectionLoading.visibility = View.GONE
+                    handleHostSearchResult(result.hosts)
                 }
 
                 is ConnectionViewModel.HostSearchResult.Error -> {
-                    notifyUser(result.message)
+                    startMdnsFallback()
                 }
             }
         }
     }
 
-    private fun handleHostSearchSuccess(hosts: List<String>) {
-        when {
-            hosts.isEmpty() -> {
-                notifyUser("No hosts found")
+    private fun startMdnsFallback() {
+        scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        mdns = MdnsHostDiscovery(requireContext())
+        scope!!.launch {
+            // Start discovery with 5 second timeout
+            mdns?.startDiscovery(timeoutMillis = 5000L) { discoveredHosts ->
+                binding.connectionLoading.visibility = View.GONE
+                if(discoveredHosts.isEmpty()) {
+                    notifyUser("No hosts found")
+                } else {
+                    handleHostSearchResult(discoveredHosts)
+                }
             }
+        }
+    }
 
+    private fun handleHostSearchResult(hosts: List<String>) {
+        when {
             hosts.size == 1 -> {
                 // Only one host available - connect automatically
                 connectToHost(hosts[0])
@@ -125,7 +133,7 @@ class MainFragment : Fragment() {
     }
 
     private fun connectToHost(hostAddress: String) {
-        viewModel.connectionManager = ConnectionManager(hostAddress)
+        viewModel.connectionManager = ConnectionManager(hostAddress, viewModel)
         sharedPrefsHelper.saveLastConnectedHost(hostAddress)
 
         viewModel.connectionManager.let { manager ->
@@ -199,5 +207,10 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mdns?.destroy()
     }
 }

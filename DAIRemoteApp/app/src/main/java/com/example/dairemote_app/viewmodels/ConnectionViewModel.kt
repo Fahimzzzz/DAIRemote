@@ -42,7 +42,6 @@ class ConnectionViewModel : ViewModel() {
 
     fun updateConnectionState(isConnected: Boolean) {
         _connectionState.value = isConnected
-//        connectionManager?.setConnectionEstablished(isConnected)
     }
 
     fun getSavedHost(context: Context): String? {

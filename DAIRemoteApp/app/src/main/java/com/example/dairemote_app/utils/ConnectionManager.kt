@@ -2,6 +2,7 @@ package com.example.dairemote_app.utils
 
 import android.os.Build
 import com.example.dairemote_app.HostSearchCallback
+import com.example.dairemote_app.viewmodels.ConnectionViewModel
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -18,8 +19,9 @@ private const val MAX_RETRIES = 3
 private const val INITIAL_RETRY_DELAY_MS = 500L
 private const val SOCKET_TIMEOUT_MS = 5000L
 
-class ConnectionManager(serverAddress: String) {
+class ConnectionManager(serverAddress: String, viewModel: ConnectionViewModel?) {
     private val executorService: ExecutorService
+    private lateinit var connectionViewModel: ConnectionViewModel
     private var hostName: String? = null
     private var hostAudioList: String? = null
     private var hostDisplayProfileList: String? = null
@@ -28,6 +30,9 @@ class ConnectionManager(serverAddress: String) {
     init {
         try {
             setServerAddress(InetAddress.getByName(serverAddress))
+            if (viewModel != null) {
+                connectionViewModel = viewModel
+            }
         } catch (ignored: Exception) {
         }
 
@@ -125,16 +130,16 @@ class ConnectionManager(serverAddress: String) {
                         waitForApproval()
                         val approved = getServerResponse().equals("approved", ignoreCase = true)
                         if (approved) {
-                            shutdownHostSearchInBackground()
-                            ConnectionMonitor.getInstance(this)
+                            //shutdownHostSearchInBackground()
+                            ConnectionMonitor.getInstance(this, connectionViewModel)
                             setConnectionEstablished(true)
                         }
                         return approved
                     }
 
                     "approved" -> {
-                        shutdownHostSearchInBackground()
-                        ConnectionMonitor.getInstance(this)
+                        //shutdownHostSearchInBackground()
+                        ConnectionMonitor.getInstance(this, connectionViewModel)
                         setConnectionEstablished(true)
                         true
                     }
@@ -264,7 +269,7 @@ class ConnectionManager(serverAddress: String) {
 
     // Shutdown the connection
     fun shutdown() {
-        ConnectionMonitor.getInstance(this)?.shutDownHeartbeat()
+        ConnectionMonitor.getInstance(this, connectionViewModel)?.shutDownHeartbeat()
         sendHostMessage("Shutdown requested")
         try {
             Thread.sleep(75)
@@ -275,7 +280,7 @@ class ConnectionManager(serverAddress: String) {
         closeUDPSocket()
     }
 
-    private fun closeUDPSocket() {
+    fun closeUDPSocket() {
         if (!getUDPSocket().isClosed) {
             getUDPSocket().close()
         }
