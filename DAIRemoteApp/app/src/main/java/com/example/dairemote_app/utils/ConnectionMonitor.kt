@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 private const val HEARTBEAT_INTERVAL_MS = 2000L
-private const val HEARTBEAT_TIMEOUT_MS: Int = 250
+private const val HEARTBEAT_TIMEOUT_MS: Int = 1000
 private const val MAX_MISSED_HEARTBEATS = 3
 
 class ConnectionMonitor(manager: ConnectionManager, private val viewModel: ConnectionViewModel) {
