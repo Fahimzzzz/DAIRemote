@@ -1,4 +1,4 @@
-﻿using DisplayProfileManager;
+using DisplayProfileManager;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -197,11 +197,23 @@ public partial class DAIRemoteApplicationUI : Form
         );
     }
 
+    // Set hotkey tooltip function
     private void SetHotkeyProfileButton_Click(object sender, EventArgs e)
     {
         string profilePath = ((sender as Button)?.Tag ?? (sender as Panel)?.Tag).ToString();
         trayIconManager.GetHotkeyManager().ShowHotkeyInput(Path.GetFileNameWithoutExtension(profilePath), () => DisplayConfig.SetDisplaySettings(profilePath));
         trayIconManager.RefreshSystemTray();
+    }
+
+    // Set hotkey main application pop up function to allow choosing a profile from a list and setting the hotkey.
+    private void BtnSetDisplayProfileHotkey_click(object sender, EventArgs e)
+    {
+        string fileName = ShowDisplayProfilesList(DisplayConfig.GetDisplayProfilesDirectory());
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            trayIconManager.GetHotkeyManager().ShowHotkeyInput(fileName, () => DisplayConfig.SetDisplaySettings(DisplayConfig.GetFullDisplayProfilePath(fileName)));
+            trayIconManager.RefreshSystemTray();
+        }
     }
 
     private void SetDefaultAudioDevice_Click(object sender, EventArgs e)
@@ -461,16 +473,6 @@ public partial class DAIRemoteApplicationUI : Form
         {
             displaySettings["defaultAudioDevice"] = audioListBox.SelectedItem.ToString();
             File.WriteAllText(profilePath, displaySettings.ToString(Formatting.Indented));
-        }
-    }
-
-    private void BtnSetDisplayProfileHotkey_click(object sender, EventArgs e)
-    {
-        string fileName = ShowDisplayProfilesList(DisplayConfig.GetDisplayProfilesDirectory());
-        if (!string.IsNullOrEmpty(fileName))
-        {
-            trayIconManager.GetHotkeyManager().ShowHotkeyInput(fileName, () => DisplayConfig.SetDisplaySettings(DisplayConfig.GetFullDisplayProfilePath(fileName)));
-            trayIconManager.RefreshSystemTray();
         }
     }
 
