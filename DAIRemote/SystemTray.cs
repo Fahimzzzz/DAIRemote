@@ -22,6 +22,7 @@ public class TrayIconManager
     private readonly Image setHotkeyIcon;
     private readonly Image audioCyclingIcon;
     private readonly Image audioIcon;
+    private readonly Image restartIcon;
 
     public TrayIconManager(Form form)
     {
@@ -36,6 +37,7 @@ public class TrayIconManager
         setHotkeyIcon = Properties.Resources.MonitorSetHotkey.ToBitmap();
         audioCyclingIcon = Properties.Resources.AudioCycling.ToBitmap();
         audioIcon = Properties.Resources.Audio.ToBitmap();
+        restartIcon = Properties.Resources.RestartApplication.ToBitmap();
 
         audioManager = AudioManager.AudioDeviceManager.GetInstance();
         // Registers any prexisting hotkeys, otherwise initializes
@@ -95,6 +97,12 @@ public class TrayIconManager
             hotkeyManager.InitializeHotkeys();
             PopulateTrayMenu(trayMenu);
         });
+    }
+
+    private void RestartApplication(object? sender, EventArgs e)
+    {
+        Application.Restart();
+        Environment.Exit(0);
     }
 
     private void OnProfilesChanged(object sender, FileSystemEventArgs e)
@@ -281,8 +289,9 @@ public class TrayIconManager
         // Helpful for when a new device is added
         // That was not present during application initialization
         ToolStripMenuItem refreshAudioDevices = new("Refresh Audio Devices", audioIcon, RefreshAudioDevices);
-        // Create the icons for making monitors sleep, the about section, and exiting the application
+        // Create the icons the about section, restarting the application, and exiting the application
         ToolStripMenuItem aboutMenuItem = new("About", aboutIcon, OnAboutClick);
+        ToolStripMenuItem restartMenuItem = new("Restart Application", restartIcon, RestartApplication);
         ToolStripMenuItem exitMenuItem = new("Exit", exitIcon, OnExit);
 
         // Separate sleeping monitors, and add the sleep, about, and exit to the main system tray menu
@@ -290,6 +299,7 @@ public class TrayIconManager
         _ = menu.Items.Add(refreshAudioDevices);
         _ = menu.Items.Add(new ToolStripSeparator());
         _ = menu.Items.Add(aboutMenuItem);
+        _ = menu.Items.Add(restartMenuItem);
         _ = menu.Items.Add(exitMenuItem);
     }
 
