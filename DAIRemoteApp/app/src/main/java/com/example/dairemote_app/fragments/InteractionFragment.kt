@@ -56,13 +56,13 @@ class InteractionFragment : Fragment() {
     private var connectionMonitor: ConnectionMonitor? = null
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
 
-    // Other variables from your Activity
     private lateinit var editText: BackspaceEditText
     private lateinit var interactionsHelpText: TextView
     private lateinit var startTutorial: TextView
     private val handler = Handler()
     private lateinit var toolbar: KeyboardToolbar
     private var keyboardLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    var vibrator: Vibrator? = null
 
     // Audio Control Panel and Host Audio Devices variables
     private lateinit var audioControlPanel: ConstraintLayout
@@ -240,7 +240,7 @@ class InteractionFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupTouchControls() {
-        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
                 requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
@@ -262,9 +262,10 @@ class InteractionFragment : Fragment() {
                 }
 
                 override fun onLongPress(e: MotionEvent) {
-                    if (vibrator.hasVibrator()) {
+                    messageHost("MOUSE_LMB_HOLD")
+                    if (vibrator!!.hasVibrator()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(
+                            vibrator!!.vibrate(
                                 VibrationEffect.createOneShot(
                                     10,
                                     VibrationEffect.DEFAULT_AMPLITUDE
@@ -272,10 +273,9 @@ class InteractionFragment : Fragment() {
                             )
                         } else {
                             @Suppress("DEPRECATION")
-                            vibrator.vibrate(10)
+                            vibrator!!.vibrate(10)
                         }
                     }
-                    messageHost("MOUSE_LMB_HOLD")
                 }
 
                 override fun onScroll(
@@ -447,6 +447,27 @@ class InteractionFragment : Fragment() {
         binding.audioCycleButton.setOnClickListener {
             messageHost("AUDIO CycleDevices")
             cycleAudioDevice()
+        }
+
+        binding.audioCycleButton.setOnLongClickListener {
+            messageHost("AUDIO RefreshDevices")
+
+            if (vibrator!!.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator!!.vibrate(
+                        VibrationEffect.createOneShot(
+                            10,
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        )
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator!!.vibrate(10)
+                }
+            }
+
+            requestAudioDevices()
+            true
         }
 
         binding.audioTogglemuteButton.setOnClickListener {
