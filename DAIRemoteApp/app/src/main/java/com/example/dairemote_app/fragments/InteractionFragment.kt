@@ -677,6 +677,28 @@ class InteractionFragment : Fragment() {
             }
             connectionLossHandler("Disconnected from host")
         }
+
+        binding.disconnectHost.setOnLongClickListener {
+            if (viewModel.connectionManager?.getConnectionEstablished() == true) {
+                messageHost("RestartApplication")
+
+                if (vibrator!!.hasVibrator()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator!!.vibrate(
+                            VibrationEffect.createOneShot(
+                                10,
+                                VibrationEffect.DEFAULT_AMPLITUDE
+                            )
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator!!.vibrate(10)
+                    }
+                }
+            }
+            connectionLossHandler("Restarting Host Application")
+            true
+        }
     }
 
     /*    private fun interactionTutorial() {

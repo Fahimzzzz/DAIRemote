@@ -163,6 +163,16 @@ namespace DAIRemote.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon RestartApplication {
+            get {
+                object obj = ResourceManager.GetObject("RestartApplication", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon SaveProfile {
             get {
                 object obj = ResourceManager.GetObject("SaveProfile", resourceCulture);

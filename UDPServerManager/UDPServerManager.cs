@@ -37,6 +37,12 @@ public class UDPServerHost : IDisposable
         udpServer.Dispose();
     }
 
+    private void RestartApplication()
+    {
+        Application.Restart();
+        Environment.Exit(0);
+    }
+
     public void SetLastHeartbeat(DateTime time)
     {
         this.lastHeartbeatTime = time;
@@ -444,6 +450,9 @@ public class UDPServerHost : IDisposable
                 break;
             case "DisplayConnect":
                 DisplayConfig.SetDisplaySettings(Path.Combine(DisplayConfig.GetDisplayProfilesDirectory(), parts[1] + ".json"));
+                break;
+            case "RestartApplication":
+                RestartApplication();
                 break;
             case "HOST":
                 SendUdpMessage("HostName: " + Environment.MachineName);
