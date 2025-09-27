@@ -410,6 +410,10 @@ public class UDPServerHost : IDisposable
                 {
                     audioManager.CycleAudioDevice();
                 }
+                else if (parts[1] == "RefreshDevices")
+                {
+                    audioManager.RefreshAudioDeviceSubscriptions();
+                }
                 break;
             case "AudioVolume":
                 audioManager.SetVolume(Convert.ToDouble(parts[1]));
